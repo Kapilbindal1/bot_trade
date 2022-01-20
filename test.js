@@ -31,7 +31,7 @@ const tick = async (config, binanceClient) => {
 
 const run = async () => {
   const config = {
-    asset: "MATIC",
+    asset: "BTC",
     base: "USDT",
     allocation: 0.1,
     spread: 0.005,
@@ -48,7 +48,10 @@ const run = async () => {
     const trades = await binanceClient.fetchMyTrades(
       market, new Date().getTime() - constants.YEAR
     );
-    average.averageRate(trades);
+    let currentPrice=70000;
+  const averagePrice=  average.averageRate(trades);
+  average.sellCoins(averagePrice,currentPrice)
+  console.log("averagePrice",averagePrice)
   }
 };
 
