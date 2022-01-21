@@ -1,9 +1,9 @@
 
-const buyCoins = (totalBase,lastBuyPrice) => {
-  let minRequired
-  if (!!totalBase && totalBase>minRequired) {
+// const buyCoins = (totalBase,lastBuyPrice) => {
+//   let minRequired
+//   if (!!totalBase && totalBase>minRequired) {
   
-}
-}
+// }
+// }
 
-module.exports.buyCoins = buyCoins;
+// module.exports.buyCoins = buyCoins;

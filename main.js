@@ -66,7 +66,7 @@ const run = async () => {
    
   const averagePrice=  average.averageRate(trades);
     average.sellCoins(averagePrice, currentPrice, totalAsset)
-    buy.buyCoins(totalBase)
+    // buy.buyCoins(totalBase)
   
   }
 };
