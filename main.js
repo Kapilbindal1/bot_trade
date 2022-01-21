@@ -10,6 +10,7 @@ let intervalMatic;
 
 let context;
 
+
 const tick = async (config, binanceClient) => {
   try {
     const { asset, base, allocation, spread } = config;
@@ -38,40 +39,33 @@ const tick = async (config, binanceClient) => {
   }
 };
 
+
 const run = async () => {
   const config = {
-    asset: "ADA",
+    asset: "BTC",
     base: "USDT",
     allocation: 0.1,
     spread: 0.005,
-    tickInterval: 40000,
+    tickInterval: 40000
   };
   const market = `${config.asset}/${config.base}`;
   dotEnv.config();
 
   const binanceClient = new ccxt.binance({
     apiKey: process.env.API_KEY,
-    secret: process.env.API_SECRET,
+    secret: process.env.API_SECRET
   });
-
-  tick(config, binanceClient);
-
-  // if (binanceClient.has["fetchMyTrades"]) {
-  //   const trades = await binanceClient.fetchMyTrades(
-  //     market,
-  //     new Date().getTime() - constants.YEAR
-  //   );
-  //   average.averageRate(trades);
-  // }
   if (binanceClient.has["fetchMyTrades"]) {
     const trades = await binanceClient.fetchMyTrades(
       market, new Date().getTime() - constants.YEAR
     );
-    let currentPrice=70000;
+    const { totalAsset,currentPrice} = tick(config, binanceClient);
+    // let currentPrice=1.24;
   const averagePrice=  average.averageRate(trades);
-  average.sellCoins(averagePrice,currentPrice)
-  console.log("averagePrice",averagePrice)
+  average.sellCoins(averagePrice,currentPrice,totalAsset,currentPrice)
+  
   }
 };
 
 run();
+module.exports = {run}
