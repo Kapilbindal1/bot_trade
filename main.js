@@ -34,6 +34,7 @@ const tick = async (config, binanceClient) => {
     };
 
     console.log("coinInfo: ", coinInfo);
+    return coinInfo
   } catch (ex) {
     console.log("Exception: ", ex);
   }
@@ -42,7 +43,7 @@ const tick = async (config, binanceClient) => {
 
 const run = async () => {
   const config = {
-    asset: "BTC",
+    asset: "ADA",
     base: "USDT",
     allocation: 0.1,
     spread: 0.005,
@@ -59,10 +60,11 @@ const run = async () => {
     const trades = await binanceClient.fetchMyTrades(
       market, new Date().getTime() - constants.YEAR
     );
-    const { totalAsset,currentPrice} = tick(config, binanceClient);
+    const { totalAsset,currentPrice} = await tick(config, binanceClient)
+      ;
     // let currentPrice=1.24;
   const averagePrice=  average.averageRate(trades);
-  average.sellCoins(averagePrice,currentPrice,totalAsset,currentPrice)
+  average.sellCoins(averagePrice,currentPrice,totalAsset)
   
   }
 };
