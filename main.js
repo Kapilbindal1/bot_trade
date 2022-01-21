@@ -4,6 +4,7 @@ const axios = require("axios");
 const http = require("http");
 const constants = require("./constant");
 const average = require("./utils/average");
+const { buy } = require("./utils/buy");
 
 let interval;
 let intervalMatic;
@@ -60,11 +61,12 @@ const run = async () => {
     const trades = await binanceClient.fetchMyTrades(
       market, new Date().getTime() - constants.YEAR
     );
-    const { totalAsset,currentPrice} = await tick(config, binanceClient)
+    const { totalAsset,currentPrice,totalBase} = await tick(config, binanceClient)
       ;
-    // let currentPrice=1.24;
+   
   const averagePrice=  average.averageRate(trades);
-  average.sellCoins(averagePrice,currentPrice,totalAsset)
+    average.sellCoins(averagePrice, currentPrice, totalAsset)
+    buy.buyCoins(totalBase)
   
   }
 };
