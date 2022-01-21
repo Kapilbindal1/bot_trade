@@ -63,6 +63,15 @@ const run = async () => {
   //   );
   //   average.averageRate(trades);
   // }
+  if (binanceClient.has["fetchMyTrades"]) {
+    const trades = await binanceClient.fetchMyTrades(
+      market, new Date().getTime() - constants.YEAR
+    );
+    let currentPrice=70000;
+  const averagePrice=  average.averageRate(trades);
+  average.sellCoins(averagePrice,currentPrice)
+  console.log("averagePrice",averagePrice)
+  }
 };
 
 run();
