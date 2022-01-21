@@ -1,71 +1,63 @@
-const dotEnv = require("dotenv");
-const ccxt = require("ccxt");
-const axios = require("axios");
-const http = require("http");
-const constants = require("./constant");
-const average = require("./utils/average");
+const constants = require('./constant')
+const average = require('./utils/average')
+const wallet = require('./utils/wallet')
+const tradeConstants = require('./utils/tradeConstants')
+const sell = require("./utils/sell")
 
-let interval;
-let intervalMatic;
+const botTradingTime = 1636341560708
 
-let context;
-
-
-const tick = async (config, binanceClient) => {
+const getCurrentPrice = async (market, binanceClient) => {
   try {
-    const { asset, base, allocation, spread } = config;
-    const market = `${asset}/${base}`;
-
-    const balances = await binanceClient.fetchBalance();
-    const assetBalance = balances.free[asset];
-    const baseBalance = balances.free[base];
-
-    let orderbook = await binanceClient.fetchOrderBook(market, 2);
+    let orderbook = await binanceClient.fetchOrderBook(market, 2)
     let currentPrice =
-      orderbook?.bids.length &&
-      orderbook.bids[0].length &&
-      orderbook.bids[0][0];
+      orderbook?.bids.length && orderbook.bids[0].length && orderbook.bids[0][0]
 
-    const coinInfo = {
+    const assetCurrentPrice = {
       market,
-      totalAsset: balances.total[asset],
-      totalBase: balances.total[base],
       currentPrice,
-    };
-
-    console.log("coinInfo: ", coinInfo);
+    }
+    return assetCurrentPrice
   } catch (ex) {
-    console.log("Exception: ", ex);
+    console.log('Exception: ', ex)
   }
-};
-
+}
 
 const run = async () => {
-  const config = {
-    asset: "BTC",
-    base: "USDT",
-    allocation: 0.1,
-    spread: 0.005,
-    tickInterval: 40000
-  };
-  const market = `${config.asset}/${config.base}`;
-  dotEnv.config();
-
-  const binanceClient = new ccxt.binance({
-    apiKey: process.env.API_KEY,
-    secret: process.env.API_SECRET
-  });
-  if (binanceClient.has["fetchMyTrades"]) {
+  const { config, market, binanceClient } = tradeConstants
+  if (binanceClient.has['fetchMyTrades']) {
     const trades = await binanceClient.fetchMyTrades(
-      market, new Date().getTime() - constants.YEAR
-    );
-    const { totalAsset,currentPrice} = tick(config, binanceClient);
-    // let currentPrice=1.24;
-  const averagePrice=  average.averageRate(trades);
-  average.sellCoins(averagePrice,currentPrice,totalAsset,currentPrice)
-  
-  }
-};
+      market,
+      new Date().getTime() - constants.YEAR,
+    )
+    const { currentPrice } = await getCurrentPrice(market, binanceClient)
+    const { assetBalance } = await wallet.getAssetQuantity(
+      config,
+      market,
+      binanceClient,
+    )
 
-run();
-module.exports = {run}
+    const averagePrice = average.averageRate(trades)
+
+    const sellCoins = sell.sellCoins(
+      averagePrice,
+      currentPrice,
+      // assetBalance,
+    )
+    if (sellCoins === 'Not Sell') {
+      const botTrades = await binanceClient.fetchMyTrades(
+        market,
+        botTradingTime,
+      )
+      console.log('botTrades', botTrades)
+      const averagePrice = average.averageRate(botTrades)
+      const sellCoins = sell.sellCoins(
+        averagePrice,
+        currentPrice,
+        // assetBalance,
+      )
+    }
+  }
+}
+
+run()
+module.exports = { run }
