@@ -2,7 +2,7 @@ const dotEnv = require('dotenv')
 const ccxt = require('ccxt')
 
 const config = {
-  asset: 'FTM',
+  asset: 'ENS',
   base: 'USDT',
   allocation: 0.1,
   spread: 0.005,

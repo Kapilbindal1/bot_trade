@@ -24,6 +24,7 @@ const getCurrentPrice = async (market, binanceClient) => {
 
 const run = async () => {
   const { config, market, binanceClient } = tradeConstants
+  // const trades = await average.getMyTrades(market,binanceClient, new Date().getTime() - constants.YEAR)
   if (binanceClient.has['fetchMyTrades']) {
     const trades = await binanceClient.fetchMyTrades(
       market,
@@ -41,14 +42,15 @@ const run = async () => {
     const sellCoins = sell.sellCoins(
       averagePrice,
       currentPrice,
-      // assetBalance,
+      assetBalance,
     )
-    if (sellCoins === 'Not Sell') {
+      console.log("test",{market,assetBalance,averagePrice,currentPrice,sellCoins})
+
+    if (sellCoins === 0) {
       const botTrades = await binanceClient.fetchMyTrades(
         market,
         botTradingTime,
       )
-      console.log('botTrades', botTrades)
       const averagePrice = average.averageRate(botTrades)
       const sellCoins = sell.sellCoins(
         averagePrice,
