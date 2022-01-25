@@ -42,22 +42,37 @@ const getBalance = async (config = DefaultConfig) => {
   }
 };
 
-const getTradesHistory = (market, time) => {
+const getTradesHistory = ({ market, time } = {}) => {
   return getClient().fetchMyTrades(
     market ?? MarketUtils.getMarket(DefaultConfig.asset, DefaultConfig.base),
     time ?? new Date().getTime() - CONSTANTS.YEAR
   );
 };
 
-const getAverageBuyRate = async () => {
+const getAverageBuyRate = async (currentPrice, time) => {
   try {
     const trades = await getTradesHistory();
-    const averageRates = Average.getAverageRate(trades);
-    return averageRates.averageRate;
+    const averageRates = Average.getAverageRate(trades, currentPrice);
+    return averageRates;
   } catch (ex) {
     console.log("Exception: ", ex);
     throw ex;
   }
 };
 
-module.exports = { getAverageBuyRate, getBalance, getClient, getTradesHistory };
+const getAverageBotBuyRate = async (currentPrice) => {
+  try {
+    return getAverageBuyRate(currentPrice, DefaultConfig.BOT_TRADING_TIMESTAMP);
+  } catch (ex) {
+    console.log("Exception: ", ex);
+    throw ex;
+  }
+};
+
+module.exports = {
+  getAverageBuyRate,
+  getBalance,
+  getClient,
+  getTradesHistory,
+  getAverageBotBuyRate
+};

@@ -1,6 +1,8 @@
-const Account = require("../account");
 const DefaultConfig = require("../constants/config");
 const MarketUtils = require("../utils/market");
+
+const Account = require("../account");
+const SellUtils = require("./sell");
 
 const getCurrentPrice = async (config = DefaultConfig) => {
   try {
@@ -20,4 +22,4 @@ const getCurrentPrice = async (config = DefaultConfig) => {
   }
 };
 
-module.exports = { getCurrentPrice }
+module.exports = { getCurrentPrice, ...SellUtils };

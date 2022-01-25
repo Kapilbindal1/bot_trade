@@ -1,6 +1,6 @@
 const numeral = require("numeral");
 
-const getAverageRate = (trades) => {
+const getAverageRate = (trades, currentPrice) => {
   let averageBuyRate = numeral(0);
   let purchaseCount = numeral(0);
   let buySum = numeral(0);
@@ -12,15 +12,21 @@ const getAverageRate = (trades) => {
   let balanceCount = numeral(0);
   let averageRate = numeral(0);
 
-  console.log("trades: ", trades);
+  console.log("trades: ", trades)
 
   trades.forEach((trade) => {
     if (trade.info) {
-      const { side, status, amount, cost } = trade;
+      const { side, status, cost,fee } = trade;
       // if (status !== 'FILLED') {
       //   return
       // }
       if (side === "buy") {
+        let tmpA = numeral(trade.amount);
+        if (fee && fee.cost) {
+          tmpA = tmpA.subtract(fee.cost)
+        }
+        const amount = tmpA.value()
+
         purchaseCount = purchaseCount.add(amount);
         buySum = buySum.add(cost);
 
@@ -35,11 +41,11 @@ const getAverageRate = (trades) => {
         }
         balanceCount = tmpBalanceCount.clone();
       } else {
-        sellCount = sellCount.add(amount);
+        sellCount = sellCount.add(trade.amount);
         sellSum = sellSum.add(cost);
 
-        balanceCount = balanceCount.subtract(amount);
-        if (balanceCount.value() <= 0) {
+        balanceCount = balanceCount.subtract(trade.amount);
+        if (balanceCount.value() <= 0 || (currentPrice && currentPrice * balanceCount.value() < 1)) {
           averageRate = numeral(0);
           balanceCount = numeral(0);
         }
