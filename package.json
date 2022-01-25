@@ -26,6 +26,7 @@
     "numeral": "^2.0.6",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.2.0",
+    "ta.js": "^1.6.0",
     "technicalindicators": "^3.1.0"
   },
   "devDependencies": {

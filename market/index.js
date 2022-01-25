@@ -3,6 +3,7 @@ const MarketUtils = require("../utils/market");
 
 const Account = require("../account");
 const SellUtils = require("./sell");
+const { binance } = require("ccxt");
 
 const getCurrentPrice = async (config = DefaultConfig) => {
   try {
@@ -22,4 +23,18 @@ const getCurrentPrice = async (config = DefaultConfig) => {
   }
 };
 
-module.exports = { getCurrentPrice, ...SellUtils };
+const getHistoricalData = async(config=DefaultConfig)=>{
+  let previousData;
+  let newArr= [];
+try {
+    previousData = await Account.getClient().fetchOHLCV(MarketUtils.getMarket(config.asset, config.base))
+    newArr = previousData.map((item)=>
+    MarketUtils.getPeriodObject(item))
+    return newArr;
+  }
+  catch(err) {
+    return console.error("Error: ",err)
+  }
+}
+
+module.exports = { getCurrentPrice, ...SellUtils,getHistoricalData };

@@ -12,7 +12,7 @@ const getAverageRate = (trades, currentPrice) => {
   let balanceCount = numeral(0);
   let averageRate = numeral(0);
 
-  console.log("trades: ", trades)
+  // console.log("trades: ", trades)
 
   trades.forEach((trade) => {
     if (trade.info) {
