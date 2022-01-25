@@ -27,7 +27,7 @@ const getHistoricalData = async(config=DefaultConfig)=>{
   let previousData;
   let newArr= [];
 try {
-    previousData = await Account.getClient().fetchOHLCV(MarketUtils.getMarket(config.asset, config.base))
+    previousData = await Account.getClient().fetchOHLCV(MarketUtils.getMarket(config.asset, config.base),timeframe="1d",since = undefined, limit = 1000)
     newArr = previousData.map((item)=>
     MarketUtils.getPeriodObject(item))
     return newArr;

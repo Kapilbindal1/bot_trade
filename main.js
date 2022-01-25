@@ -43,15 +43,17 @@ const run = async () => {
   let SupportLineResult = await SupportLine.applySupportLine(lowData);
   let ResistanceLineResult = await ResistanceLine.applyResistanceLine(highData);
 
-  console.log("INDICATORS: ", {
-    closedData,
-    RSIResult,
+  console.log(
+    "INDICATORS: ",
+    // historicalData.length,
+    historicalData[historicalData.length - 2],
+    RSIResult[RSIResult.length - 2]
     // BollingerBandsResult,
     // MACDResult,
     // EMAResult,
     // SupportLineResult,
     // ResistanceLineResult,
-  });
+  );
 
   // if (sellCoins === 0) {
   // const botTrades = await binanceClient.fetchMyTrades(
