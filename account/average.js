@@ -4,22 +4,15 @@ const getAverageRate = (trades, currentPrice) => {
   let averageBuyRate = numeral(0);
   let purchaseCount = numeral(0);
   let buySum = numeral(0);
-
   let averageSellRate = numeral(0);
   let sellCount = numeral(0);
   let sellSum = numeral(0);
-
   let balanceCount = numeral(0);
   let averageRate = numeral(0);
-
-  console.log("trades: ", trades)
 
   trades.forEach((trade) => {
     if (trade.info) {
       const { side, status, cost,fee } = trade;
-      // if (status !== 'FILLED') {
-      //   return
-      // }
       if (side === "buy") {
         let tmpA = numeral(trade.amount);
         if (fee && fee.cost) {

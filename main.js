@@ -1,6 +1,10 @@
 const Account = require("./account");
 const Market = require("./market");
-
+const Main = require("./utils/mainUtils");
+const RSI = require("./market/indicators/RSI");
+const BB = require("./market/indicators/BB")
+const EMA = require("./market/indicators/EMA");
+const MACD = require("./market/indicators/MACD");
 
 const run = async () => {
   const currentPrice = await Market.getCurrentPrice();
@@ -10,15 +14,22 @@ const run = async () => {
   let sellData = Market.makeSell(averageRate, currentPrice, asset);
   if (sellData.quantity <= 0) {
     const averageBotRate = await Account.getAverageBotBuyRate(currentPrice);
-    console.log("averageBotRate: ", averageBotRate)
     sellData = Market.makeSell(averageBotRate.averageRate, currentPrice, averageBotRate.balanceCount);
   }
+  let historicalData = await Market.getHistoricalData();
 
-  console.log("test", {
-    asset,
-    averageRate,
-    currentPrice
-  });
+  let indicatorInputData = Main.getCloseInputData(historicalData);
+
+  let RSI_result = RSI.calculateRSIValue(indicatorInputData);
+  let BB_result = BB.calculateBBValue(indicatorInputData);
+  let EMA_result = EMA.calculateEMAValue(indicatorInputData);
+  let MACD_result = MACD.calculateMACDValue(indicatorInputData);
+
+
+  console.log("RSI_result",RSI_result);
+  // console.log("BB_result",BB_result);
+  // console.log("EMA_result",EMA_result);
+  // console.log("MACD_result",MACD_result);
 
   // if (sellCoins === 0) {
     // const botTrades = await binanceClient.fetchMyTrades(
