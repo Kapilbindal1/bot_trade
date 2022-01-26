@@ -1,3 +1,5 @@
+const dotEnv = require("dotenv");
+const TelegramBot = require("node-telegram-bot-api");
 const Account = require("./account");
 const Market = require("./market");
 const Main = require("./utils/mainUtils");
@@ -6,6 +8,9 @@ const { RSI, BB, EMA, MACD } = require("./market/indicators");
 // DB related imports
 const UsersDb = require("./db/users");
 const db = require("./db")
+dotEnv.config();
+const token = process.env.BOT_TOKEN;
+const bot = new TelegramBot(token, { polling: true });
 
 const run = async () => {
   await db.connect()
@@ -13,12 +18,16 @@ const run = async () => {
 
   const currentPrice = await Market.getCurrentPrice();
   const { averageRate } = await Account.getAverageBuyRate(currentPrice);
-  const { asset } = await Account.getBalance();
+  const { market, asset, base } = await Account.getBalance();
 
   let sellData = Market.makeSell(averageRate, currentPrice, asset);
   if (sellData.quantity <= 0) {
     const averageBotRate = await Account.getAverageBotBuyRate(currentPrice);
-    sellData = Market.makeSell(averageBotRate.averageRate, currentPrice, averageBotRate.balanceCount);
+    sellData = Market.makeSell(
+      averageBotRate.averageRate,
+      currentPrice,
+      averageBotRate.balanceCount
+    );
   }
   let historicalDataHourly = await Market.getHistoricalData("1m");
 
@@ -33,6 +42,20 @@ const run = async () => {
   let MACD_result = MACD.calculateMACDValue(indicatorInputData);
   let MACD_result_hourly = MACD.calculateMACDValue(indicatorInputDataHourly);
 
+  bot.on("message", (msg) => {
+    const chatId = msg.chat.id;
+
+    // send a message to the chat acknowledging receipt of their message
+    const testMessage = {
+      market,
+      asset,
+      base,
+      averageRate,
+      currentPrice,
+      sellData,
+    };
+    bot.sendMessage(chatId, JSON.stringify(testMessage));
+  });
 
   // console.log("RSI_result",RSI_result);
   // console.log("BB_result",BB_result);
@@ -49,16 +72,16 @@ const run = async () => {
   // console.log("adviceBB",JSON.stringify(adviceBB));
 
   // if (sellCoins === 0) {
-    // const botTrades = await binanceClient.fetchMyTrades(
-    //   market,
-    //   botTradingTime
-    // );
-    // const averagePrice = average.averageRate(botTrades);
-    // const sellCoins = sell.sellCoins(
-    //   averageRate,
-    //   currentPrice
-    //   // assetBalance,
-    // );
+  // const botTrades = await binanceClient.fetchMyTrades(
+  //   market,
+  //   botTradingTime
+  // );
+  // const averagePrice = average.averageRate(botTrades);
+  // const sellCoins = sell.sellCoins(
+  //   averageRate,
+  //   currentPrice
+  //   // assetBalance,
+  // );
   // }
 
 
