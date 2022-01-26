@@ -1,8 +1,9 @@
+const NodeCache = require( "node-cache" );
 const DefaultConfig = require("../constants/config");
 const MarketUtils = require("../utils/market");
 const Account = require("../account");
 const SellUtils = require("./sell");
-
+const myCache = new NodeCache( { stdTTL: 50, checkperiod: 60 } );
 
 const getCurrentPrice = async (config = DefaultConfig) => {
   try {
@@ -22,18 +23,26 @@ const getCurrentPrice = async (config = DefaultConfig) => {
   }
 };
 
-const getHistoricalData = async(config=DefaultConfig)=>{
+const getHistoricalData = async (timeframe = "5m", config = DefaultConfig) => {
+  const market = MarketUtils.getMarket(config.asset, config.base)
+  const key = `${market}_${timeframe}`;
+  if (myCache.get(key)) {
+    console.log("cache returned")
+    return myCache.get(key)
+  }
   let previousData;
-  let newArr= [];
-try {
-    previousData = await Account.getClient().fetchOHLCV(MarketUtils.getMarket(config.asset, config.base),timeframe="5m")
-    newArr = previousData.map((item)=>
-    MarketUtils.getPeriodObject(item))
+  let newArr = [];
+  try {
+    previousData = await Account.getClient().fetchOHLCV(
+      market,
+      timeframe
+    );
+    newArr = previousData.map((item) => MarketUtils.getPeriodObject(item));
+    myCache.set(key, newArr)
     return newArr;
+  } catch (err) {
+    return console.error("Error: ", err);
   }
-  catch(err) {
-    return console.error("Error: ",err)
-  }
-}
+};
 
-module.exports = { getCurrentPrice, ...SellUtils,getHistoricalData };
+module.exports = { getCurrentPrice, ...SellUtils, getHistoricalData };
