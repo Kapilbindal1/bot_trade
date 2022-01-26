@@ -39,14 +39,17 @@ const getUserByName = async (userName) => {
 }
 
 const updateUser = async (userId, data) => {
-    const { name, coinsCount, balance } = data;
-    if (!name || !coinsCount || !balance) {
+    const { coinsCount, balance } = data;
+    if ( !coinsCount || !balance) {
         return { success: false }
     }
     try {
          await User.updateOne(
             { _id: userId },
-            { $set: data }
+            { $set: {
+                coinsCount: coinsCount,
+                balance: balance
+            } }
         );
         return { success: true}
     }
