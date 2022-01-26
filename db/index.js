@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const dotEnv = require("dotenv");
+dotEnv.config();
 
-const connect = () => {
+const connect = async() => {
     const uri = process.env.MONGO_URL;
     try {
-        const connection = mongoose.connect(uri, {
+        const connection = await mongoose.connect(uri, {
             useNewUrlParser: true, useUnifiedTopology: true
         });
         if (connection) {
@@ -11,7 +13,7 @@ const connect = () => {
         }
     }
     catch (err) {
-        console.log("database connection error");
+        console.log("database connection error", err);
         return { success: false }
     }
 }

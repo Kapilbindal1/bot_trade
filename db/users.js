@@ -30,7 +30,7 @@ const getUsers = async () => {
 }
 const getUserByName = async (userName) => {
     try {
-        const user = await User.findOne({name: userName});
+        const user = await User.find({name: userName});
         return { success: true, data: user }
     }
     catch (err) {

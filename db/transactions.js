@@ -31,9 +31,9 @@ const getAllTransactions = async () => {
 
 }
 
-const getUserTransactions = async (userName) => {
+const getUserTransactionsByUsername = async (userName) => {
     try {
-        const data = await Entry.findOne({userName: userName});
+        const data = await Entry.find({userName: userName})
         return { success: true, data: data }
     }
     catch (err) {
@@ -41,4 +41,4 @@ const getUserTransactions = async (userName) => {
     }
 }
 
-module.exports = { addTransaction, getAllTransactions, getUserTransactions };
+module.exports = { addTransaction, getAllTransactions, getUserTransactionsByUsername };
