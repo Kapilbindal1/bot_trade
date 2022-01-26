@@ -35,7 +35,7 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
 
 const makeSell = (averagePrice, currentPrice, quantity) => {
   const quantityToSell = getQuantityToSell(averagePrice, currentPrice, quantity)
-  console.log("quantityToSell: ", quantityToSell)
+  // console.log("quantityToSell: ", quantityToSell)
 
   return { quantity: quantityToSell }
 };
