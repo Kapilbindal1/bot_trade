@@ -20,7 +20,7 @@ const addTransaction = async (req) => {
     }
 }
 
-const getLastTransaction = async () => {
+const getAllTransactions = async () => {
     try {
         const transactions = await Entry.find({});
         return { success: true, data: transactions }
@@ -30,4 +30,15 @@ const getLastTransaction = async () => {
     }
 
 }
-module.exports = { addTransaction, getLastTransaction };
+
+const getUserTransactions = async (userName) => {
+    try {
+        const data = await Entry.findOne({userName: userName});
+        return { success: true, data: data }
+    }
+    catch (err) {
+        return { success: false, err: err }
+    }
+}
+
+module.exports = { addTransaction, getAllTransactions, getUserTransactions };
