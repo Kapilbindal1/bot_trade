@@ -1,7 +1,7 @@
 const express = require('express');
 const swaggerJSDoc = require('swagger-jsdoc');  
 const swaggerUI = require('swagger-ui-express');  
-
+const mongoose = require('mongoose');
 const UserController = require('./user');
 const bodyParser = require('body-parser');
 
@@ -56,5 +56,14 @@ app.post('/user/averagePrice', UserController.averagePrice);
 
 const port = process.env.PORT || 8000;
 app.listen(port, function () {  
-  console.log('App listening at: ', port);  
+  console.log('App listening at: ', port); 
 });
+const uri  = "mongodb+srv://test:test@cluster0.dngxq.mongodb.net/tradeBot";
+const connection = mongoose.connect(uri, {
+  useNewUrlParser: true, useUnifiedTopology: true });
+if(connection){
+console.log("database connected");
+}
+else{
+console.log("database connection error");
+}
