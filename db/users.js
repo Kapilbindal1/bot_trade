@@ -27,7 +27,7 @@ const getUsers = async () => {
     catch (err) {
         return { success: false, err: err }
     }
-
+}
 const getUserByName = async (userName) => {
     try {
         const user = await User.findOne({name: userName});
