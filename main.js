@@ -1,10 +1,7 @@
 const Account = require("./account");
 const Market = require("./market");
 const Main = require("./utils/mainUtils");
-const RSI = require("./market/indicators/RSI");
-const BB = require("./market/indicators/BB")
-const EMA = require("./market/indicators/EMA");
-const MACD = require("./market/indicators/MACD");
+const { RSI, BB, EMA, MACD } = require("./market/indicators");
 
 const run = async () => {
   const currentPrice = await Market.getCurrentPrice();
