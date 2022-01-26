@@ -3,7 +3,6 @@ const ccxt = require("ccxt");
 const DefaultConfig = require("../constants/config");
 const CONSTANTS = require("../constants");
 const MarketUtils = require("../utils/market");
-const Entry = require('../schemas/entries');
 
 const Average = require("./average");
 
@@ -70,42 +69,10 @@ const getAverageBotBuyRate = async (currentPrice) => {
   }
 };
 
-const newTransaction = (req) => {
-  const { coinCount, cointName, accountbalance, transactionType } = req.body;
-  if (!coinCount || !cointName || !accountbalance || !transactionType) {
-      return  {succes: false}
-  }
-  const newEntry = new Entry({
-      coinCount: coinCount,
-      cointName: cointName,
-      accountbalance: accountbalance,
-      transactionType: transactionType
-  })
-  newEntry
-      .save()
-      .then(() => {
-          return {succes: true}
-      })
-      .catch(err => {
-          return {succes: true, err: err}
-      })
-}
-
-const getLastTransaction = () => {
-  Entry.find({}).sort({ _id: -1 }).limit(1).then((result) => {
-      return {data: result}
-  }).catch((err) => {
-      return {err: err}
-  })
-
-}
-
 module.exports = {
   getAverageBuyRate,
   getBalance,
   getClient,
   getTradesHistory,
   getAverageBotBuyRate,
-  newTransaction,
-  getLastTransaction
 };
