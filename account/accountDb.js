@@ -43,7 +43,7 @@ const getTradesHistory = async ({ market, time, name } = {}) => {
       }
     });
 
-    console.log("data", data);
+    // console.log("data", data, new Date(timeFrom), marketConsider);
     return data.transactions || []
 
   } catch (ex) {
@@ -52,9 +52,9 @@ const getTradesHistory = async ({ market, time, name } = {}) => {
 };
 
 
-const getAverageBuyRate = async (currentPrice, time, name) => {
+const getAverageBuyRate = async ({currentPrice, time, name}) => {
   try {
-    const trades = await getTradesHistory({ name });
+    const trades = await getTradesHistory({ name, time });
     const averageRates = Average.getAverageRate(trades, currentPrice);
     return averageRates;
   } catch (ex) {

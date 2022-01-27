@@ -26,40 +26,41 @@ const run = async () => {
     const user_name = bot.name;
 
     const currentPrice = await Market.getCurrentPrice();
-    const { averageRate } = await Account.getAverageBuyRate(
+    const { averageRate } = await Account.getAverageBuyRate({
       currentPrice,
-      user_name
-    );
-    const { market, asset, base } = await Account.getBalance(user_name);
-    let sellData = bot.sellFunction({
-      averageBuyRate: averageRate,
-      currentPrice,
-      quantity: asset
+      name: user_name
     });
+    console.log("averageRate: ", averageRate);
+    // const { market, asset, base } = await Account.getBalance(user_name);
+    // let sellData = bot.sellFunction({
+    //   averageBuyRate: averageRate,
+    //   currentPrice,
+    //   quantity: asset
+    // });
 
-    if (sellData.quantity > 0) {
-      await placeOrder({
-        userName: user_name,
-        side: "sell",
-        price: currentPrice,
-        amount: sellData.quantity,
-        market: market,
-        averageBuyRate: averageRate,
-      });
-      return;
-    }
+    // if (sellData.quantity > 0) {
+    //   await placeOrder({
+    //     userName: user_name,
+    //     side: "sell",
+    //     price: currentPrice,
+    //     amount: sellData.quantity,
+    //     market: market,
+    //     averageBuyRate: averageRate,
+    //   });
+    //   return;
+    // }
 
-    const buyData = await bot.buyFunction({ balance: base, currentPrice });
-    console.log("buyData.quantity: ", buyData.quantity);
-    if (buyData.quantity > 0) {
-      await placeOrder({
-        userName: user_name,
-        side: "buy",
-        price: currentPrice,
-        amount: buyData.quantity,
-        market: market
-      });
-    }
+    // const buyData = await bot.buyFunction({ balance: base, currentPrice });
+    // console.log("buyData.quantity: ", buyData.quantity);
+    // if (buyData.quantity > 0) {
+    //   await placeOrder({
+    //     userName: user_name,
+    //     side: "buy",
+    //     price: currentPrice,
+    //     amount: buyData.quantity,
+    //     market: market
+    //   });
+    // }
   });
 
   // if (sellData.quantity <= 0) {
@@ -135,7 +136,7 @@ let cronTask;
 
 const main = async () => {
   await db.connect();
-
+  run();
   cron.schedule("*/30 * * * * *", () => {
     run();
   });

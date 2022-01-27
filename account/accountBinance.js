@@ -35,7 +35,7 @@ const getTradesHistory = ({ market, time } = {}) => {
   );
 };
 
-const getAverageBuyRate = async (currentPrice, time) => {
+const getAverageBuyRate = async ({currentPrice, time}) => {
   try {
     const trades = await getTradesHistory();
     const averageRates = Average.getAverageRate(trades, currentPrice);
