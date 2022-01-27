@@ -18,7 +18,7 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
         sellRatio = 0.5;
       } else if (profitPercentage > 30) {
         sellRatio = 0.3;
-      } else if (profitPercentage < 10) {
+      } else if (profitPercentage > 1) {
         sellRatio = 0.1;
       }
       if (sellRatio > 0) {
@@ -33,11 +33,9 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
   return 0;
 };
 
-const makeSell = (averagePrice, currentPrice, quantity) => {
-  const quantityToSell = getQuantityToSell(averagePrice, currentPrice, quantity)
-  // console.log("quantityToSell: ", quantityToSell)
-
+const sell = ({averageBuyRate, currentPrice, quantity}) => {
+  const quantityToSell = getQuantityToSell(averageBuyRate, currentPrice, quantity)
   return { quantity: quantityToSell }
 };
 
-module.exports = { makeSell };
+module.exports = { sell };

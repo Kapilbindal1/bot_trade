@@ -1,10 +1,11 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
 const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
-const { buy1 } = require("./market/buy");
-const cron = require('node-cron');
+const { bots } = require("./bots");
+
+const cron = require("node-cron");
 
 // DB related imports
 const db = require("./db");
@@ -13,61 +14,64 @@ const db = require("./db");
 // const bot = new TelegramBot(token, { polling: true });
 
 const app = express();
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
 
 const run = async () => {
   // console.log(new Date())
-  
+
   // console.log(new Date())
 
-  const user_name = "test1234";
+  (bots || []).forEach(async (bot) => {
+    const user_name = bot.name;
 
-  const currentPrice = await Market.getCurrentPrice();
-  const { averageRate } = await Account.getAverageBuyRate(
-    currentPrice,
-    user_name
-  );
-  const { market, asset, base } = await Account.getBalance(user_name);
-  // console.log(averageRate)
-  let sellData = Market.makeSell(averageRate, currentPrice, asset);
-  if (sellData.quantity <= 0) {
-    const averageBotRate = await Account.getAverageBotBuyRate(
+    const currentPrice = await Market.getCurrentPrice();
+    const { averageRate } = await Account.getAverageBuyRate(
       currentPrice,
       user_name
     );
-    sellData = Market.makeSell(
-      averageBotRate.averageRate,
+    const { market, asset, base } = await Account.getBalance(user_name);
+    let sellData = bot.sellFunction({
+      averageBuyRate: averageRate,
       currentPrice,
-      averageBotRate.balanceCount
-    );
-  }
-
-  if (sellData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "sell",
-      price: currentPrice,
-      amount: sellData.quantity,
-      market: market
+      quantity: asset
     });
-    return;
-  }
 
-  const buyData = await buy1.buy(base, currentPrice);
-  console.log("buyData.quantity: ", buyData.quantity)
-  if (buyData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "buy",
-      price: currentPrice,
-      amount: buyData.quantity,
-      market: market
-    });
-  }
+    if (sellData.quantity > 0) {
+      await placeOrder({
+        userName: user_name,
+        side: "sell",
+        price: currentPrice,
+        amount: sellData.quantity,
+        market: market
+      });
+      return;
+    }
 
+    const buyData = await bot.buyFunction({ balance: base, currentPrice });
+    console.log("buyData.quantity: ", buyData.quantity);
+    if (buyData.quantity > 0) {
+      await placeOrder({
+        userName: user_name,
+        side: "buy",
+        price: currentPrice,
+        amount: buyData.quantity,
+        market: market
+      });
+    }
+  });
 
-
+  // if (sellData.quantity <= 0) {
+  //   const averageBotRate = await Account.getAverageBotBuyRate(
+  //     currentPrice,
+  //     user_name
+  //   );
+  //   sellData = sell1.makeSell(
+  //     averageBotRate.averageRate,
+  //     currentPrice,
+  //     averageBotRate.balanceCount
+  //   );
+  // }
 
   // // let historicalDataHourly = await Market.getHistoricalData("1m");
 
@@ -131,16 +135,13 @@ let cronTask;
 const main = async () => {
   await db.connect();
 
-  cron.schedule('* * * * *', () => {
-    run()
+  cron.schedule("*/30 * * * * *", () => {
+    run();
   });
-}
-
-
-
+};
 
 const port = process.env.PORT || 8000;
-app.listen(port, function () {  
-  console.log('App listening at: ', port); 
+app.listen(port, function () {
+  console.log("App listening at: ", port);
   main();
 });

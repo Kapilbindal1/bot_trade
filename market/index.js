@@ -2,7 +2,6 @@ const NodeCache = require( "node-cache" );
 const DefaultConfig = require("../constants/config");
 const MarketUtils = require("../utils/market");
 const { getClient } = require("../binance")
-const SellUtils = require("./sell");
 const myCache = new NodeCache( { stdTTL: 50, checkperiod: 60 } );
 
 const getCurrentPrice = async (config = DefaultConfig) => {
@@ -45,4 +44,4 @@ const getHistoricalData = async (timeframe = "5m", config = DefaultConfig) => {
   }
 };
 
-module.exports = { getCurrentPrice, ...SellUtils, getHistoricalData };
+module.exports = { getCurrentPrice, getHistoricalData };
