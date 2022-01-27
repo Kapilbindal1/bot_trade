@@ -1,18 +1,22 @@
-const Entry = require("./schemas/entries");
 const Transactions = require("./schemas/transactions");
 const users = require("./users");
 
 const addTransaction = async (req) => {
-  const { coinsCount, userName, price, type } = req;
-  if (!coinsCount || !userName || !price || !type) {
+  const { amount, userName, price, side, info , market, date} = req;
+  if (!userName || !price || !side || !market || !date || !info || !amount) {
     return { success: false };
   }
-  const newEntry = new Entry({
-    coinsCount: coinsCount,
+  const newEntry = new Transactions({
+    amount: amount,
     userName: userName,
     price: price,
-    type: type
+    side: side,
+    info: info,
+    date: date,
+    market: market,
+    cost: price * amount
   });
+
   try {
     await newEntry.save();
     return { success: true };
@@ -32,7 +36,7 @@ const getTransactions = async (query = {}) => {
 
 const getUserTransactionsByUsername = async (userName) => {
   try {
-    const data = await Entry.find({ userName: userName });
+    const data = await Transactions.find({ userName: userName });
     return { success: true, data: data };
   } catch (err) {
     return { success: false, err: err };
