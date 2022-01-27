@@ -4,6 +4,7 @@ const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
+const { keepAlive } = require("./alive");
 
 const cron = require("node-cron");
 
@@ -146,4 +147,7 @@ const port = process.env.PORT || 8000;
 app.listen(port, function () {
   console.log("App listening at: ", port);
   main();
+  keepAlive()
 });
+
+
