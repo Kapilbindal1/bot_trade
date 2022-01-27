@@ -8,7 +8,7 @@ const { RSI, MACD } = require("../indicators")
 const config = require("../../constants/config");
 
 const buy = async (balance, currentPrice) => {
-  if (balance < config.minimumBuy) return false
+  if (balance < config.minimumBuy) return { quantity: 0, message: "less than minimum balance" }
   let historicalData_5m = await Market.getHistoricalData();
   let indicatorInputData_5m = MainUtils.getCloseInputData(historicalData_5m);
 

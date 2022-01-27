@@ -54,7 +54,7 @@ const run = async () => {
     return;
   }
 
-  const buyData = buy1.buy(base);
+  const buyData = await buy1.buy(base);
   console.log("buyData.quantity: ", buyData.quantity)
   if (buyData.quantity > 0) {
     await placeOrder({
