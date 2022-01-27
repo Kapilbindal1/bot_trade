@@ -23,10 +23,13 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
       }
       if (sellRatio > 0) {
         let coinToSell = sellRatio * quantity;
+        const coinToSellValue = coinToSell * currentPrice;
+        coinToSell = coinToSellValue < MINIMUM_SELL_VALUE ? MINIMUM_SELL_VALUE/currentPrice : coinToSell;
+
         const leftSellCoins = quantity - coinToSell;
         const leftCoinValue = currentPrice * leftSellCoins;
         const coinsToSell = leftCoinValue < MINIMUM_SELL_VALUE ? quantity : coinToSell;
-        return coinsToSell * currentPrice < MINIMUM_SELL_VALUE ? MINIMUM_SELL_VALUE/currentPrice : coinsToSell
+        return coinsToSell;
       }
     }
   }
