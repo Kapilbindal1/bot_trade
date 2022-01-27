@@ -1,13 +1,13 @@
 const NodeCache = require( "node-cache" );
 const DefaultConfig = require("../constants/config");
 const MarketUtils = require("../utils/market");
-const Account = require("../account");
+const { getClient } = require("../binance")
 const SellUtils = require("./sell");
 const myCache = new NodeCache( { stdTTL: 50, checkperiod: 60 } );
 
 const getCurrentPrice = async (config = DefaultConfig) => {
   try {
-    let orderbook = await Account.getClient().fetchOrderBook(
+    let orderbook = await getClient().fetchOrderBook(
       MarketUtils.getMarket(config.asset, config.base),
       2
     );
@@ -33,7 +33,7 @@ const getHistoricalData = async (timeframe = "5m", config = DefaultConfig) => {
   let previousData;
   let newArr = [];
   try {
-    previousData = await Account.getClient().fetchOHLCV(
+    previousData = await getClient().fetchOHLCV(
       market,
       timeframe
     );
