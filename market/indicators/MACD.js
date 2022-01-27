@@ -3,9 +3,9 @@ var MACD = require("technicalindicators").MACD;
 const calculateMACDValue = (values) => {
   var inputRSI = {
     values,
-    fastPeriod: 5,
-    slowPeriod: 8,
-    signalPeriod: 3,
+    fastPeriod: 12,
+    slowPeriod: 26,
+    signalPeriod: 9,
     SimpleMAOscillator: false,
     SimpleMASignal: false
   };

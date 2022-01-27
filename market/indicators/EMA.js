@@ -1,11 +1,26 @@
-const EMA = require('technicalindicators').EMA                  
+const EMA = require("technicalindicators").EMA;
 
-const calculateEMAValue = (values)=> {
-    var inputRSI = {
-        values ,
-        period : 12
-      };
-   return EMA.calculate(inputRSI);
-}
+const calculateEMAValue = (values, period) => {
+  var inputRSI = {
+    values,
+    period,
+  };
+  return EMA.calculate(inputRSI);
+};
 
-module.exports = { calculateEMAValue }
+const getAdvice = (emaResult_9, emaResult_18, currentPrice) => {
+  const adviceArray = [];
+  let advice = "hold";
+  if (emaResult_9 > emaResult_18 && currentPrice > emaResult_9) {
+    advice = "buy";
+  } else if (emaResult_9 < emaResult_18 && currentPrice > emaResult_18) {
+    advice = "hold";
+  } else if (emaResult_9 < emaResult_18 && currentPrice < emaResult_18) {
+    advice = "sell";
+  }
+
+  adviceArray.push(advice);
+  return { advice };
+};
+
+module.exports = { calculateEMAValue, getAdvice };

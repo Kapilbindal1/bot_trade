@@ -4,6 +4,8 @@ const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
+const Main = require("./utils/mainUtils");
+const { EMA, MACD } = require("./market/indicators");
 
 const cron = require("node-cron");
 
@@ -28,7 +30,7 @@ const run = async () => {
     const currentPrice = await Market.getCurrentPrice();
     const { averageRate } = await Account.getAverageBuyRate({
       currentPrice,
-      name: user_name
+      name: user_name,
     });
     console.log("averageRate: ", averageRate);
     // const { market, asset, base } = await Account.getBalance(user_name);
@@ -77,17 +79,30 @@ const run = async () => {
 
   // // let historicalDataHourly = await Market.getHistoricalData("1m");
 
-  // let historicalData = await Market.getHistoricalData();
+  let historicalData = await Market.getHistoricalData();
   // // console.log(new Date())
-  // let indicatorInputData = Main.getCloseInputData(historicalData);
+  let indicatorInputData = await Main.getCloseInputData(historicalData);
   // // let indicatorInputDataHourly = Main.getCloseInputData(historicalDataHourly);
 
   // let RSI_result = RSI.calculateRSIValue(indicatorInputData);
   // let BB_result = BB.calculateBBValue(indicatorInputData);
-  // let EMA_result = EMA.calculateEMAValue(indicatorInputData);
-  // let MACD_result = MACD.calculateMACDValue(indicatorInputData);
+  let EMA_result_9 = await EMA.calculateEMAValue(indicatorInputData, 9);
+  let EMA_result_18 = await EMA.calculateEMAValue(indicatorInputData, 18);
+  let MACD_result = await MACD.calculateMACDValue(indicatorInputData);
   // // let MACD_result_hourly = MACD.calculateMACDValue(indicatorInputDataHourly);
-
+  // const currentPrice = await Market.getCurrentPrice();
+  // console.log(
+  //   "historicalData",
+  //   historicalData[historicalData.length - 1],
+  //   "EMA_result_9",
+  //   EMA_result_9[EMA_result_9.length - 1],
+  //   "EMA_result_18",
+  //   EMA_result_18[EMA_result_18.length - 1],
+  //   "MACD_result",
+  //   MACD_result[MACD_result.length - 1],
+  //   "currentPrice",
+  //   currentPrice
+  // );
   // // bot.on("message", (msg) => {
   // //   const chatId = msg.chat.id;
 
@@ -105,7 +120,7 @@ const run = async () => {
 
   // // console.log("RSI_result",RSI_result);
   // // console.log("BB_result",BB_result);
-  // // console.log("EMA_result",EMA_result);
+  // console.log("EMA_result",EMA_result);
 
   // const adviceMACD = MACD.getAdvice(MACD_result);
   // // const adviceHourly = MACD.getAdvice(MACD_result_hourly)
