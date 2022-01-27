@@ -25,6 +25,7 @@ const buyCoin = async (count, rate, username, market) => {
     }
     return { success: false };
   } catch (err) {
+    console.log("err: ", err)
     return { success: false, err: err };
   }
 };
@@ -62,6 +63,7 @@ const placeOrder = async ({ userName, side, price, amount, market }) => {
   try {
     if (side === "buy") {
       const newBuyTransaction = await buyCoin(amount, price, userName, market);
+      console.log("newBuyTransaction: ", newBuyTransaction)
       return newBuyTransaction;
     } else {
       const newSellTransaction = await sellCoin(

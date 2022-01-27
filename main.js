@@ -55,6 +55,7 @@ const run = async () => {
   }
 
   const buyData = buy1.buy(base);
+  console.log("buyData.quantity: ", buyData.quantity)
   if (buyData.quantity > 0) {
     await placeOrder({
       userName: user_name,
@@ -124,6 +125,8 @@ const run = async () => {
   // // const user = await UsersDb.getOrCreateUserByName("test77");
   // // console.log(new Date())
 };
+
+let cronTask;
 
 const main = async () => {
   await db.connect();
