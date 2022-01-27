@@ -43,7 +43,8 @@ const run = async () => {
         side: "sell",
         price: currentPrice,
         amount: sellData.quantity,
-        market: market
+        market: market,
+        averageBuyRate: averageRate,
       });
       return;
     }

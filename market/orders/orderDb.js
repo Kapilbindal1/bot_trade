@@ -1,7 +1,7 @@
 const Users = require("../../db/users");
 const Transactions = require("../../db/transactions");
 
-const buyCoin = async (count, rate, username, market) => {
+const buyCoin = async (count, rate, username, market, averageBuyRate) => {
   try {
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
@@ -16,7 +16,8 @@ const buyCoin = async (count, rate, username, market) => {
           userName: username,
           cost: count * rate,
           side: "buy",
-          market: market
+          market: market,
+          averageBuyRate
         });
         if (isTransactionCompleted) {
           return { success: true };
@@ -30,7 +31,7 @@ const buyCoin = async (count, rate, username, market) => {
   }
 };
 
-const sellCoin = async (count, rate, username, market) => {
+const sellCoin = async (count, rate, username, market, averageBuyRate) => {
   try {
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
@@ -46,7 +47,8 @@ const sellCoin = async (count, rate, username, market) => {
           userName: username,
           cost: count * rate,
           side: "sell",
-          market: market
+          market: market,
+          averageBuyRate
         });
         if (isTransactioncompleted) {
           return { success: true };
@@ -59,10 +61,10 @@ const sellCoin = async (count, rate, username, market) => {
   }
 };
 
-const placeOrder = async ({ userName, side, price, amount, market }) => {
+const placeOrder = async ({ userName, side, price, amount, market, averageBuyRate }) => {
   try {
     if (side === "buy") {
-      const newBuyTransaction = await buyCoin(amount, price, userName, market);
+      const newBuyTransaction = await buyCoin(amount, price, userName, market, averageBuyRate);
       console.log("newBuyTransaction: ", newBuyTransaction)
       return newBuyTransaction;
     } else {
@@ -70,7 +72,8 @@ const placeOrder = async ({ userName, side, price, amount, market }) => {
         amount,
         price,
         userName,
-        market
+        market,
+        averageBuyRate
       );
       return newSellTransaction;
     }
