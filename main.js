@@ -21,7 +21,9 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
 const run = async () => {
-  (bots || []).forEach(async (bot) => {
+  const botsArray = bots || []
+  for (let i = 0; i < bots.length; i+= 1){
+    const bot = bots[i];
     const user_name = bot.name;
     const currentPrice = await Market.getCurrentPrice();
     const { averageRate } = await Account.getAverageBuyRate({
@@ -36,6 +38,7 @@ const run = async () => {
         balance: base,
         currentPrice
       });
+      console.log("Quantity: ", quantity, " side: ", side);
       if (side === "sell") {
         if (quantity === 0) {
           const sellData = bot.sellFunction({
@@ -107,7 +110,7 @@ const run = async () => {
         });
       }
     }
-  });
+  };
 };
 
 let cronTask;

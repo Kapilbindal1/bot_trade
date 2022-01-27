@@ -29,6 +29,7 @@ const buy = async ({ balance, currentPrice }) => {
   } else if (adviceEMA.advice === "sell") {
     return { quantity: 0, side: "sell" };
   }
+  return { quantity: 0, side: "hold" };
 };
 
 module.exports = { buy };
