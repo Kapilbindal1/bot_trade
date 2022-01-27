@@ -1,4 +1,4 @@
-
+const express = require('express');
 const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
@@ -10,6 +10,10 @@ const db = require("./db");
 // dotEnv.config();
 // const token = process.env.BOT_TOKEN;
 // const bot = new TelegramBot(token, { polling: true });
+
+const app = express();
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 const run = async () => {
   // console.log(new Date())
@@ -128,4 +132,11 @@ const main = async () => {
   });
 }
 
-main();
+
+
+
+const port = process.env.PORT || 8000;
+app.listen(port, function () {  
+  console.log('App listening at: ', port); 
+  main();
+});
