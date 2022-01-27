@@ -5,8 +5,10 @@
 const Market = require("../index");
 const MainUtils = require("../../utils/mainUtils")
 const { RSI, MACD } = require("../indicators")
+const config = require("../../constants/config");
 
-const buy = () => {
+const buy = async (balance, currentPrice) => {
+  if (balance < config.minimumBuy) return false
   let historicalData_5m = await Market.getHistoricalData();
   let indicatorInputData_5m = MainUtils.getCloseInputData(historicalData_5m);
 
@@ -15,10 +17,11 @@ const buy = () => {
   const adviceRSI = RSI.getAdvice(RSI_result_5m)
   const adviceMACD = MACD.getAdvice(MACD_result_5m)
   if (adviceMACD.advice === "buy" && (adviceRSI.advice === "buy" || adviceRSI.advice === "hold")) {
-    // buy the coins
-    return true;
+    const amountForBuy = balance < (2 * config.buyLot) ? balance : config.buyLot
+    const quantityToBuy = amountForBuy/currentPrice;
+    return { quantity: quantityToBuy };
   }
-  return false
+  return { quantity: 0 }
 }
 
 module.exports = { buy }

@@ -38,7 +38,7 @@ const getUserByName = async (userName) => {
 
 const updateUser = async (userId, data) => {
   const { coinsCount, balance } = data;
-  if (!coinsCount || !balance) {
+  if (isNaN(coinsCount) || isNaN(balance)) {
     return { success: false };
   }
   try {

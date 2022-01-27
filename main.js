@@ -1,10 +1,9 @@
-const dotEnv = require("dotenv");
-// const TelegramBot = require("node-telegram-bot-api");
+
 const Account = require("./account");
 const Market = require("./market");
-const Main = require("./utils/mainUtils");
-const { RSI, BB, EMA, MACD } = require("./market/indicators");
-const orderDb = require("./market/orders/orderDb");
+const { placeOrder } = require("./market/orders");
+const { buy1 } = require("./market/buy");
+const cron = require('node-cron');
 
 // DB related imports
 const db = require("./db");
@@ -14,17 +13,17 @@ const db = require("./db");
 
 const run = async () => {
   // console.log(new Date())
-  await db.connect();
+  
   // console.log(new Date())
 
-  const user_name = "test1";
+  const user_name = "test1234";
 
   const currentPrice = await Market.getCurrentPrice();
   const { averageRate } = await Account.getAverageBuyRate(
     currentPrice,
     user_name
   );
-  const { market, asset, base } = await Account.getBalance("test");
+  const { market, asset, base } = await Account.getBalance(user_name);
   // console.log(averageRate)
   let sellData = Market.makeSell(averageRate, currentPrice, asset);
   if (sellData.quantity <= 0) {
@@ -39,73 +38,94 @@ const run = async () => {
     );
   }
 
-  console.log("asset", asset);
+  if (sellData.quantity > 0) {
+    await placeOrder({
+      userName: user_name,
+      side: "sell",
+      price: currentPrice,
+      amount: sellData.quantity,
+      market: market
+    });
+    return;
+  }
 
-  const newTransactionInfo = await orderDb.placeOrderDb({
-    userName: "test",
-    side: "buy",
-    price: currentPrice,
-    amount: 50,
-    market: market,
-  });
-  console.log("newTransactionInfo", newTransactionInfo, currentPrice);
+  const buyData = buy1.buy(base);
+  if (buyData.quantity > 0) {
+    await placeOrder({
+      userName: user_name,
+      side: "buy",
+      price: currentPrice,
+      amount: buyData.quantity,
+      market: market
+    });
+  }
 
-  // let historicalDataHourly = await Market.getHistoricalData("1m");
 
-  let historicalData = await Market.getHistoricalData();
-  // console.log(new Date())
-  let indicatorInputData = Main.getCloseInputData(historicalData);
-  // let indicatorInputDataHourly = Main.getCloseInputData(historicalDataHourly);
 
-  let RSI_result = RSI.calculateRSIValue(indicatorInputData);
-  let BB_result = BB.calculateBBValue(indicatorInputData);
-  let EMA_result = EMA.calculateEMAValue(indicatorInputData);
-  let MACD_result = MACD.calculateMACDValue(indicatorInputData);
-  // let MACD_result_hourly = MACD.calculateMACDValue(indicatorInputDataHourly);
 
-  // bot.on("message", (msg) => {
-  //   const chatId = msg.chat.id;
+  // // let historicalDataHourly = await Market.getHistoricalData("1m");
 
-  //   // send a message to the chat acknowledging receipt of their message
-  //   const testMessage = {
-  //     market,
-  //     asset,
-  //     base,
-  //     averageRate,
-  //     currentPrice,
-  //     sellData,
-  //   };
-  //   bot.sendMessage(chatId, JSON.stringify(testMessage));
-  // });
+  // let historicalData = await Market.getHistoricalData();
+  // // console.log(new Date())
+  // let indicatorInputData = Main.getCloseInputData(historicalData);
+  // // let indicatorInputDataHourly = Main.getCloseInputData(historicalDataHourly);
 
-  // console.log("RSI_result",RSI_result);
-  // console.log("BB_result",BB_result);
-  // console.log("EMA_result",EMA_result);
+  // let RSI_result = RSI.calculateRSIValue(indicatorInputData);
+  // let BB_result = BB.calculateBBValue(indicatorInputData);
+  // let EMA_result = EMA.calculateEMAValue(indicatorInputData);
+  // let MACD_result = MACD.calculateMACDValue(indicatorInputData);
+  // // let MACD_result_hourly = MACD.calculateMACDValue(indicatorInputDataHourly);
 
-  const adviceMACD = MACD.getAdvice(MACD_result);
-  // const adviceHourly = MACD.getAdvice(MACD_result_hourly)
-  const adviceBB = BB.getAdvice(BB_result);
-  const adviceRSI = RSI.getAdvice(RSI_result);
-  // console.log("adviceRSI",JSON.stringify(adviceRSI));
-  // console.log("adviceMACD",JSON.stringify(adviceMACD));
-  // console.log("adviceBB",JSON.stringify(adviceBB));
+  // // bot.on("message", (msg) => {
+  // //   const chatId = msg.chat.id;
 
-  // if (sellCoins === 0) {
-  // const botTrades = await binanceClient.fetchMyTrades(
-  //   market,
-  //   botTradingTime
-  // );
-  // const averagePrice = average.averageRate(botTrades);
-  // const sellCoins = sell.sellCoins(
-  //   averageRate,
-  //   currentPrice
-  //   // assetBalance,
-  // );
-  // }
+  // //   // send a message to the chat acknowledging receipt of their message
+  // //   const testMessage = {
+  // //     market,
+  // //     asset,
+  // //     base,
+  // //     averageRate,
+  // //     currentPrice,
+  // //     sellData,
+  // //   };
+  // //   bot.sendMessage(chatId, JSON.stringify(testMessage));
+  // // });
 
-  // const user = await UsersDb.getOrCreateUserByName("test77");
-  // console.log(new Date())
+  // // console.log("RSI_result",RSI_result);
+  // // console.log("BB_result",BB_result);
+  // // console.log("EMA_result",EMA_result);
+
+  // const adviceMACD = MACD.getAdvice(MACD_result);
+  // // const adviceHourly = MACD.getAdvice(MACD_result_hourly)
+  // const adviceBB = BB.getAdvice(BB_result);
+  // const adviceRSI = RSI.getAdvice(RSI_result);
+  // // console.log("adviceRSI",JSON.stringify(adviceRSI));
+  // // console.log("adviceMACD",JSON.stringify(adviceMACD));
+  // // console.log("adviceBB",JSON.stringify(adviceBB));
+
+  // // if (sellCoins === 0) {
+  // // const botTrades = await binanceClient.fetchMyTrades(
+  // //   market,
+  // //   botTradingTime
+  // // );
+  // // const averagePrice = average.averageRate(botTrades);
+  // // const sellCoins = sell.sellCoins(
+  // //   averageRate,
+  // //   currentPrice
+  // //   // assetBalance,
+  // // );
+  // // }
+
+  // // const user = await UsersDb.getOrCreateUserByName("test77");
+  // // console.log(new Date())
 };
 
-run();
-module.exports = { run };
+const main = async () => {
+  await db.connect();
+
+  cron.schedule('* * * * *', () => {
+    run()
+  });
+}
+
+main();

@@ -11,7 +11,7 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
       let profitPercentage =
         ((currentPrice - averagePrice) / averagePrice) * 100;
       if (profitPercentage >= 100) {
-        return totalAsset;
+        sellRatio = 1.0
       } else if (profitPercentage >= 70) {
         sellRatio = 0.7;
       } else if (profitPercentage >= 50) {
@@ -22,10 +22,10 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
         sellRatio = 0.1;
       }
       if (sellRatio > 0) {
-        let coinToSell = sellRatio * totalAsset;
-        const leftSellCoins = totalAsset - coinToSell;
+        let coinToSell = sellRatio * quantity;
+        const leftSellCoins = quantity - coinToSell;
         const leftCoinValue = currentPrice * leftSellCoins;
-        const coinsToSell = leftCoinValue < MINIMUM_SELL_VALUE ? totalAsset : coinToSell;
+        const coinsToSell = leftCoinValue < MINIMUM_SELL_VALUE ? quantity : coinToSell;
         return coinsToSell * currentPrice < MINIMUM_SELL_VALUE ? MINIMUM_SELL_VALUE/currentPrice : coinsToSell
       }
     }

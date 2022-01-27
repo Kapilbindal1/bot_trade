@@ -3,22 +3,24 @@ const Transactions = require("../../db/transactions");
 
 const buyCoin = async (count, rate, username, market) => {
   try {
-    const userData = await Users.getUserByName(username);
-    const prevData = userData.user;
-    const isUserUpdated = await Users.updateUser(prevData._id, {
-      coinsCount: prevData.coinsCount + count,
-      balance: prevData.balance - count * rate,
-    });
-    if (isUserUpdated) {
-      const isTransactionCompleted = await Transactions.addTransaction({
+    const userData = await Users.getOrCreateUserByName(username);
+    if (!!userData.user) {
+      const prevData = userData.user;
+      const isUserUpdated = await Users.updateUser(prevData._id, {
         coinsCount: prevData.coinsCount + count,
-        userName: username,
-        price: rate,
-        type: "buy",
-        market: market,
+        balance: prevData.balance - count * rate
       });
-      if (isTransactionCompleted) {
-        return { success: true };
+      if (isUserUpdated && isUserUpdated.success) {
+        const isTransactionCompleted = await Transactions.addTransaction({
+          amount: count,
+          userName: username,
+          cost: count * rate,
+          side: "buy",
+          market: market
+        });
+        if (isTransactionCompleted) {
+          return { success: true };
+        }
       }
     }
     return { success: false };
@@ -29,22 +31,25 @@ const buyCoin = async (count, rate, username, market) => {
 
 const sellCoin = async (count, rate, username, market) => {
   try {
-    const userData = await Users.getUserByName(username);
-    const prevData = userData.data[0];
-    const isUserUpdated = await Users.updateUser(prevData._id, {
-      coinsCount: prevData.coinsCount - count,
-      balance: prevData.balance + count * rate,
-    });
-    if (isUserUpdated) {
-      const isTransactioncompleted = await Transactions.addTransaction({
+    const userData = await Users.getOrCreateUserByName(username);
+    if (!!userData.user) {
+      const prevData = userData.user;
+      const isUserUpdated = await Users.updateUser(prevData._id, {
         coinsCount: prevData.coinsCount - count,
-        userName: username,
-        price: rate,
-        type: "sell",
-        market: market,
+        balance: prevData.balance + count * rate
       });
-      if (isTransactioncompleted) {
-        return { success: true };
+      
+      if (isUserUpdated && isUserUpdated.success) {
+        const isTransactioncompleted = await Transactions.addTransaction({
+          amount: count,
+          userName: username,
+          cost: count * rate,
+          side: "sell",
+          market: market
+        });
+        if (isTransactioncompleted) {
+          return { success: true };
+        }
       }
     }
     return { success: false };
@@ -53,14 +58,19 @@ const sellCoin = async (count, rate, username, market) => {
   }
 };
 
-const placeOrderDb = async ({ userName, side, price, amount, market }) => {
+const placeOrder = async ({ userName, side, price, amount, market }) => {
   try {
-    if(side==="buy"){
-        const newBuyTransaction = await buyCoin(amount,price,userName,market)
-        return newBuyTransaction
-    }else{
-        const newSellTransaction = await sellCoin(amount,price,userName,market)
-        return newSellTransaction
+    if (side === "buy") {
+      const newBuyTransaction = await buyCoin(amount, price, userName, market);
+      return newBuyTransaction;
+    } else {
+      const newSellTransaction = await sellCoin(
+        amount,
+        price,
+        userName,
+        market
+      );
+      return newSellTransaction;
     }
   } catch (err) {
     console.error("Error: ", err);
@@ -68,4 +78,4 @@ const placeOrderDb = async ({ userName, side, price, amount, market }) => {
   }
 };
 
-module.exports = { placeOrderDb, buyCoin, sellCoin };
+module.exports = { placeOrder };
