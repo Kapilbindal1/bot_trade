@@ -20,49 +20,26 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
 const run = async () => {
-  // console.log(new Date())
-
-  // console.log(new Date())
-
   (bots || []).forEach(async (bot) => {
     const user_name = bot.name;
-
     const currentPrice = await Market.getCurrentPrice();
     const { averageRate } = await Account.getAverageBuyRate({
       currentPrice,
       name: user_name,
     });
     console.log("averageRate: ", averageRate);
-    // const { market, asset, base } = await Account.getBalance(user_name);
-    // let sellData = bot.sellFunction({
-    //   averageBuyRate: averageRate,
-    //   currentPrice,
-    //   quantity: asset
-    // });
+    const { market, asset, base } = await Account.getBalance(user_name);
 
-    // if (sellData.quantity > 0) {
-    //   await placeOrder({
-    //     userName: user_name,
-    //     side: "sell",
-    //     price: currentPrice,
-    //     amount: sellData.quantity,
-    //     market: market,
-    //     averageBuyRate: averageRate,
-    //   });
-    //   return;
-    // }
-
-    // const buyData = await bot.buyFunction({ balance: base, currentPrice });
-    // console.log("buyData.quantity: ", buyData.quantity);
-    // if (buyData.quantity > 0) {
-    //   await placeOrder({
-    //     userName: user_name,
-    //     side: "buy",
-    //     price: currentPrice,
-    //     amount: buyData.quantity,
-    //     market: market
-    //   });
-    // }
+    // trade1function(bot, market, asset, base, averageRate, currentPrice, user_name);
+    trade2function(
+      bot,
+      market,
+      asset,
+      base,
+      averageRate,
+      currentPrice,
+      user_name
+    );
   });
 
   // if (sellData.quantity <= 0) {
@@ -79,16 +56,18 @@ const run = async () => {
 
   // // let historicalDataHourly = await Market.getHistoricalData("1m");
 
-  let historicalData = await Market.getHistoricalData();
+  // let historicalData = await Market.getHistoricalData();
   // // console.log(new Date())
-  let indicatorInputData = await Main.getCloseInputData(historicalData);
+  // let indicatorInputData = await Main.getCloseInputData(historicalData);
   // // let indicatorInputDataHourly = Main.getCloseInputData(historicalDataHourly);
 
   // let RSI_result = RSI.calculateRSIValue(indicatorInputData);
   // let BB_result = BB.calculateBBValue(indicatorInputData);
-  let EMA_result_9 = await EMA.calculateEMAValue(indicatorInputData, 9);
-  let EMA_result_18 = await EMA.calculateEMAValue(indicatorInputData, 18);
-  let MACD_result = await MACD.calculateMACDValue(indicatorInputData);
+
+  // let EMA_result_9 = await EMA.calculateEMAValue(indicatorInputData, 9);
+  // let EMA_result_18 = await EMA.calculateEMAValue(indicatorInputData, 18);
+  // let MACD_result = await MACD.calculateMACDValue(indicatorInputData);
+
   // // let MACD_result_hourly = MACD.calculateMACDValue(indicatorInputDataHourly);
   // const currentPrice = await Market.getCurrentPrice();
   // console.log(
@@ -148,6 +127,84 @@ const run = async () => {
 };
 
 let cronTask;
+
+const trade1function = async (
+  bot,
+  market,
+  asset,
+  base,
+  averageRate,
+  currentPrice,
+  user_name
+) => {
+  let sellData = bot.sellFunction({
+    averageBuyRate: averageRate,
+    currentPrice,
+    quantity: asset,
+  });
+
+  if (sellData.quantity > 0) {
+    await placeOrder({
+      userName: user_name,
+      side: "sell",
+      price: currentPrice,
+      amount: sellData.quantity,
+      market: market,
+      averageBuyRate: averageRate,
+    });
+    return;
+  }
+
+  const buyData = await bot.buyFunction({ balance: base, currentPrice });
+  if (buyData.quantity > 0) {
+    await placeOrder({
+      userName: user_name,
+      side: "buy",
+      price: currentPrice,
+      amount: buyData.quantity,
+      market: market,
+    });
+  }
+};
+
+const trade2function = async (
+  bot,
+  market,
+  asset,
+  base,
+  averageRate,
+  currentPrice,
+  user_name
+) => {
+  let { quantity, side } = bot.buyFunction({ balance: base, currentPrice });
+  if (side === "buy") {
+    await placeOrder({
+      userName: user_name,
+      side: "buy",
+      price: currentPrice,
+      amount: quantity,
+      market: market,
+    });
+  } else if (side === "sell") {
+    let sellData = bot.sellFunction({
+      averageBuyRate: averageRate,
+      currentPrice,
+      quantity: asset,
+    });
+
+    if (sellData.quantity > 0) {
+      await placeOrder({
+        userName: user_name,
+        side: "sell",
+        price: currentPrice,
+        amount: sellData.quantity,
+        market: market,
+        averageBuyRate: averageRate,
+      });
+      return;
+    }
+  }
+};
 
 const main = async () => {
   await db.connect();

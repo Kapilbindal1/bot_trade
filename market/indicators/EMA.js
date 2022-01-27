@@ -18,7 +18,6 @@ const getAdvice = (emaResult_9, emaResult_18, currentPrice) => {
   } else if (emaResult_9 < emaResult_18 && currentPrice < emaResult_18) {
     advice = "sell";
   }
-
   adviceArray.push(advice);
   return { advice };
 };

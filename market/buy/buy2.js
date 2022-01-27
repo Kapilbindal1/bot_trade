@@ -23,9 +23,12 @@ const buy = async ({ balance, currentPrice }) => {
   if (adviceEMA.advice === "buy") {
     const amountForBuy = balance < 2 * config.buyLot ? balance : config.buyLot;
     const quantityToBuy = amountForBuy / currentPrice;
-    return { quantity: quantityToBuy };
+    return { quantity: quantityToBuy, side: "buy" };
+  } else if (adviceEMA.advice === "hold") {
+    return { quantity: 0, side: "hold" };
+  } else if (adviceEMA.advice === "sell") {
+    return { quantity: 0, side: "sell" };
   }
-  return { quantity: 0 };
 };
 
 module.exports = { buy };
