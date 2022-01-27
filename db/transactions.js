@@ -42,19 +42,19 @@ const getUserTransactionsByUsername = async (userName) => {
 const buyCoin = async (count, rate, username) => {
   try {
     const userData = await users.getUserByName(username);
-    const prevData = userData.data[0];
+    const prevData = userData.user;
     const isUserUpdated = await users.updateUser(prevData._id, {
       coinsCount: prevData.coinsCount + count,
       balance: prevData.balance - count * rate
     });
     if (isUserUpdated) {
-      const isTransactioncompleted = await addTransaction({
+      const isTransactionCompleted = await addTransaction({
         coinsCount: prevData.coinsCount + count,
         userName: username,
         price: rate,
         type: "buy"
       });
-      if (isTransactioncompleted) {
+      if (isTransactionCompleted) {
         return { success: true };
       }
     }
