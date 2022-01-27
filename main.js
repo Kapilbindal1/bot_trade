@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
