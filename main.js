@@ -30,7 +30,7 @@ const run = async () => {
       currentPrice,
       name: user_name
     });
-    console.log("averageRate: ", averageRate);
+    console.log("averageRate: ", averageRate, "  currentPrice: ", currentPrice);
     const { market, asset, base } = await Account.getBalance(user_name);
     let sellData = bot.sellFunction({
       averageBuyRate: averageRate,
