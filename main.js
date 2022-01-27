@@ -4,37 +4,56 @@ const Account = require("./account");
 const Market = require("./market");
 const Main = require("./utils/mainUtils");
 const { RSI, BB, EMA, MACD } = require("./market/indicators");
+const orderDb = require("./market/orders/orderDb");
 
 // DB related imports
-const db = require("./db")
+const db = require("./db");
 // dotEnv.config();
 // const token = process.env.BOT_TOKEN;
 // const bot = new TelegramBot(token, { polling: true });
 
 const run = async () => {
-  console.log(new Date())
-  await db.connect()
-  console.log(new Date())
+  // console.log(new Date())
+  await db.connect();
+  // console.log(new Date())
 
-  const user_name = "test1"
+  const user_name = "test1";
 
   const currentPrice = await Market.getCurrentPrice();
-  const { averageRate } = await Account.getAverageBuyRate(currentPrice, user_name);
-  const { market, asset, base } = await Account.getBalance(user_name);
-  console.log(averageRate)
+  const { averageRate } = await Account.getAverageBuyRate(
+    currentPrice,
+    user_name
+  );
+  const { market, asset, base } = await Account.getBalance("test");
+  // console.log(averageRate)
   let sellData = Market.makeSell(averageRate, currentPrice, asset);
   if (sellData.quantity <= 0) {
-    const averageBotRate = await Account.getAverageBotBuyRate(currentPrice, user_name);
+    const averageBotRate = await Account.getAverageBotBuyRate(
+      currentPrice,
+      user_name
+    );
     sellData = Market.makeSell(
       averageBotRate.averageRate,
       currentPrice,
       averageBotRate.balanceCount
     );
   }
+
+  console.log("asset", asset);
+
+  const newTransactionInfo = await orderDb.placeOrderDb({
+    userName: "test",
+    side: "buy",
+    price: currentPrice,
+    amount: 50,
+    market: market,
+  });
+  console.log("newTransactionInfo", newTransactionInfo, currentPrice);
+
   // let historicalDataHourly = await Market.getHistoricalData("1m");
 
   let historicalData = await Market.getHistoricalData();
-  console.log(new Date())
+  // console.log(new Date())
   let indicatorInputData = Main.getCloseInputData(historicalData);
   // let indicatorInputDataHourly = Main.getCloseInputData(historicalDataHourly);
 
@@ -62,16 +81,14 @@ const run = async () => {
   // console.log("RSI_result",RSI_result);
   // console.log("BB_result",BB_result);
   // console.log("EMA_result",EMA_result);
-  
 
-
-  const adviceMACD = MACD.getAdvice(MACD_result)
+  const adviceMACD = MACD.getAdvice(MACD_result);
   // const adviceHourly = MACD.getAdvice(MACD_result_hourly)
-  const adviceBB = BB.getAdvice(BB_result)
-  const adviceRSI = RSI.getAdvice(RSI_result)
-  console.log("adviceRSI",JSON.stringify(adviceRSI));
-  console.log("adviceMACD",JSON.stringify(adviceMACD));
-  console.log("adviceBB",JSON.stringify(adviceBB));
+  const adviceBB = BB.getAdvice(BB_result);
+  const adviceRSI = RSI.getAdvice(RSI_result);
+  // console.log("adviceRSI",JSON.stringify(adviceRSI));
+  // console.log("adviceMACD",JSON.stringify(adviceMACD));
+  // console.log("adviceBB",JSON.stringify(adviceBB));
 
   // if (sellCoins === 0) {
   // const botTrades = await binanceClient.fetchMyTrades(
@@ -86,11 +103,9 @@ const run = async () => {
   // );
   // }
 
-
   // const user = await UsersDb.getOrCreateUserByName("test77");
-  console.log(new Date())
+  // console.log(new Date())
 };
-
 
 run();
 module.exports = { run };

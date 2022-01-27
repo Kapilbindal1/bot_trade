@@ -1,20 +1,19 @@
 const Transactions = require("./schemas/transactions");
-const users = require("./users");
 
 const addTransaction = async (req) => {
-  const { amount, userName, price, side, info , market, date} = req;
-  if (!userName || !price || !side || !market || !date || !info || !amount) {
+  const { amount, userName, price, side, info, market, date } = req;
+
+  if (!userName || !side || !market || !amount) {
     return { success: false };
   }
   const newEntry = new Transactions({
     amount: amount,
     userName: userName,
-    price: price,
     side: side,
     info: info,
     date: date,
     market: market,
-    cost: price * amount
+    cost: price * amount,
   });
 
   try {
@@ -43,60 +42,10 @@ const getUserTransactionsByUsername = async (userName) => {
   }
 };
 
-const buyCoin = async (count, rate, username) => {
-  try {
-    const userData = await users.getUserByName(username);
-    const prevData = userData.user;
-    const isUserUpdated = await users.updateUser(prevData._id, {
-      coinsCount: prevData.coinsCount + count,
-      balance: prevData.balance - count * rate
-    });
-    if (isUserUpdated) {
-      const isTransactionCompleted = await addTransaction({
-        coinsCount: prevData.coinsCount + count,
-        userName: username,
-        price: rate,
-        type: "buy"
-      });
-      if (isTransactionCompleted) {
-        return { success: true };
-      }
-    }
-    return { success: false };
-  } catch (err) {
-    return { success: false, err: err };
-  }
-};
 
-const sellCoin = async (count, rate, username) => {
-  try {
-    const userData = await users.getUserByName(username);
-    const prevData = userData.data[0];
-    const isUserUpdated = await users.updateUser(prevData._id, {
-      coinsCount: prevData.coinsCount - count,
-      balance: prevData.balance + count * rate
-    });
-    if (isUserUpdated) {
-      const isTransactioncompleted = await addTransaction({
-        coinsCount: prevData.coinsCount - count,
-        userName: username,
-        price: rate,
-        type: "sell"
-      });
-      if (isTransactioncompleted) {
-        return { success: true };
-      }
-    }
-    return { success: false };
-  } catch (err) {
-    return { success: false, err: err };
-  }
-};
 
 module.exports = {
   addTransaction,
   getTransactions,
   getUserTransactionsByUsername,
-  buyCoin,
-  sellCoin
 };
