@@ -34,7 +34,7 @@ const run = async () => {
     const { market, asset, base } = await Account.getBalance(user_name);
 
     if (bot.indicatorFunction) {
-      let { quantity, side } = bot.indicatorFunction({
+      let { quantity, side } = await bot.indicatorFunction({
         balance: base,
         currentPrice
       });
