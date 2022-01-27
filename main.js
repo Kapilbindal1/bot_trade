@@ -31,36 +31,36 @@ const run = async () => {
       name: user_name
     });
     console.log("averageRate: ", averageRate);
-    // const { market, asset, base } = await Account.getBalance(user_name);
-    // let sellData = bot.sellFunction({
-    //   averageBuyRate: averageRate,
-    //   currentPrice,
-    //   quantity: asset
-    // });
+    const { market, asset, base } = await Account.getBalance(user_name);
+    let sellData = bot.sellFunction({
+      averageBuyRate: averageRate,
+      currentPrice,
+      quantity: asset
+    });
 
-    // if (sellData.quantity > 0) {
-    //   await placeOrder({
-    //     userName: user_name,
-    //     side: "sell",
-    //     price: currentPrice,
-    //     amount: sellData.quantity,
-    //     market: market,
-    //     averageBuyRate: averageRate,
-    //   });
-    //   return;
-    // }
+    if (sellData.quantity > 0) {
+      await placeOrder({
+        userName: user_name,
+        side: "sell",
+        price: currentPrice,
+        amount: sellData.quantity,
+        market: market,
+        averageBuyRate: averageRate,
+      });
+      return;
+    }
 
-    // const buyData = await bot.buyFunction({ balance: base, currentPrice });
-    // console.log("buyData.quantity: ", buyData.quantity);
-    // if (buyData.quantity > 0) {
-    //   await placeOrder({
-    //     userName: user_name,
-    //     side: "buy",
-    //     price: currentPrice,
-    //     amount: buyData.quantity,
-    //     market: market
-    //   });
-    // }
+    const buyData = await bot.buyFunction({ balance: base, currentPrice });
+    console.log("buyData.quantity: ", buyData.quantity);
+    if (buyData.quantity > 0) {
+      await placeOrder({
+        userName: user_name,
+        side: "buy",
+        price: currentPrice,
+        amount: buyData.quantity,
+        market: market
+      });
+    }
   });
 
   // if (sellData.quantity <= 0) {
