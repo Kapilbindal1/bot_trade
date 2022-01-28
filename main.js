@@ -36,6 +36,7 @@ const run = async () => {
         balance: base,
         currentPrice,
       });
+      console.log(user_name, " Advice: ", advice, currentPrice)
       if (advice === "sell" && asset > 0) {
         await placeOrder({
           userName: user_name,
