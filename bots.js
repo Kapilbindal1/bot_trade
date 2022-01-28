@@ -7,6 +7,11 @@ const bots = [
     sellFunction: sell1.sell,
   },
   {
+    name: "test_99",
+    buyFunction: buy1.buy,
+    sellFunction: sell1.sell,
+  },
+  {
     name: "yash_bhuvan_EMA_singleBuy",
     buyFunction: buy2.buy,
     sellFunction: sell1.sell,
