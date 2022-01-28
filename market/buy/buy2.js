@@ -7,7 +7,7 @@ const MainUtils = require("../../utils/mainUtils");
 const { EMA } = require("../indicators");
 const config = require("../../constants/config");
 
-const indicator = async ({ balance, currentPrice }) => {
+const indicator = async ({ balance, currentPrice, asset }) => {
   if (balance < config.minimumBuy)
     return { quantity: 0, message: "less than minimum balance" };
   let historicalData_5m = await Market.getHistoricalData();
@@ -19,13 +19,15 @@ const indicator = async ({ balance, currentPrice }) => {
     EMA_result_5m_9[EMA_result_5m_9.length - 2],
     EMA_result_5m_18[EMA_result_5m_18.length - 2],
     currentPrice,
-    null
+    null,
+    asset
   );
   const adviceEMA = EMA.getAdvice(
     EMA_result_5m_9[EMA_result_5m_9.length - 1],
     EMA_result_5m_18[EMA_result_5m_18.length - 1],
     currentPrice,
-    prevAdviceEMA.advice
+    prevAdviceEMA.advice,
+    asset
   );
 
   return adviceEMA;

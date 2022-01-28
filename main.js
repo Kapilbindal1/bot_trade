@@ -37,6 +37,7 @@ const run = async () => {
       let { advice } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
+        asset,
       });
       if (advice === "sell" && asset > 0) {
         await placeOrder({
