@@ -30,51 +30,28 @@ const run = async () => {
       currentPrice,
       name: user_name,
     });
-    console.log(
-      "averageRate: ",
-      averageRate,
-      "  currentPrice: ",
-      currentPrice,
-      bot.name
-    );
+
     const { market, asset, base } = await Account.getBalance(user_name);
 
     if (bot.indicatorFunction) {
-      let { quantity, side } = await bot.indicatorFunction({
+      let { advice } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
       });
-      console.log("Quantity: ", quantity, " side: ", side);
-      if (side === "sell") {
-        if (quantity === 0) {
-          const sellData = bot.sellFunction({
-            averageBuyRate: averageRate,
-            currentPrice,
-            quantity: asset,
-          });
-          quantity = sellData.quantity;
-        }
+      if (advice === "sell" && asset > 0) {
+        await placeOrder({
+          userName: user_name,
+          side: "sell",
+          price: currentPrice,
+          amount: asset,
+          market: market,
+          averageBuyRate: averageRate,
+        });
+      } else if (advice === "buy") {
+        const { quantity } = await bot.buyFunction({
+          currentPrice,
+        });
 
-        if (quantity > 0) {
-          await placeOrder({
-            userName: user_name,
-            side: "sell",
-            price: currentPrice,
-            amount: quantity,
-            market: market,
-            averageBuyRate: averageRate,
-          });
-          return;
-        }
-      } else if (side === "buy") {
-        if (quantity === 0) {
-          const buyData = await bot.buyFunction({
-            balance: base,
-            currentPrice,
-          });
-          console.log("buyData.quantity: ", buyData.quantity);
-          quantity = buyData.quantity;
-        }
         if (quantity > 0) {
           await placeOrder({
             userName: user_name,
@@ -84,7 +61,7 @@ const run = async () => {
             market: market,
           });
         }
-      }
+      } else return;
     } else {
       let sellData = bot.sellFunction({
         averageBuyRate: averageRate,

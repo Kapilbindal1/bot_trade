@@ -15,25 +15,26 @@ const indicator = async ({ balance, currentPrice }) => {
 
   let EMA_result_5m_9 = EMA.calculateEMAValue(indicatorInputData_5m, 9);
   let EMA_result_5m_18 = EMA.calculateEMAValue(indicatorInputData_5m, 18);
+  const prevAdviceEMA = EMA.getAdvice(
+    EMA_result_5m_9[EMA_result_5m_9.length - 2],
+    EMA_result_5m_18[EMA_result_5m_18.length - 2],
+    currentPrice,
+    null
+  );
   const adviceEMA = EMA.getAdvice(
     EMA_result_5m_9[EMA_result_5m_9.length - 1],
     EMA_result_5m_18[EMA_result_5m_18.length - 1],
     currentPrice,
-    lastTransaction
+    prevAdviceEMA.advice
   );
+
+  return adviceEMA;
 };
 
-const buy = ({ adviceEMA, currentPrice }) => {
-  if (adviceEMA.advice === "buy") {
-    const amountForBuy = balance < 2 * config.buyLot ? balance : config.buyLot;
-    const quantityToBuy = amountForBuy / currentPrice;
-    return { quantity: quantityToBuy, side: "buy" };
-  } else if (adviceEMA.advice === "hold") {
-    return { quantity: 0, side: "hold" };
-  } else if (adviceEMA.advice === "sell") {
-    return { quantity: 0, side: "sell" };
-  }
-  return { quantity: 0, side: "hold" };
+const buy = ({ currentPrice }) => {
+  const amountForBuy = balance * 0.25 < 100 ? balance * 0.25 : 100;
+  const quantityToBuy = amountForBuy / currentPrice;
+  return { quantity: quantityToBuy };
 };
 
 module.exports = { indicator, buy };
