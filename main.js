@@ -35,6 +35,7 @@ const run = async () => {
       let { advice } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
+        asset,
       });
       console.log(user_name, " Advice: ", advice, currentPrice)
       if (advice === "sell" && asset > 0) {

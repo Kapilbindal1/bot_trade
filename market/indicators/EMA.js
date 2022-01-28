@@ -8,7 +8,13 @@ const calculateEMAValue = (values, period) => {
   return EMA.calculate(inputRSI);
 };
 
-const getAdvice = (emaResult_9, emaResult_18, currentPrice, lastAdvice) => {
+const getAdvice = (
+  emaResult_9,
+  emaResult_18,
+  currentPrice,
+  lastAdvice,
+  asset
+) => {
   let advice = "hold";
   if (emaResult_9 > emaResult_18 && currentPrice > emaResult_9) {
     advice = "buy";
@@ -19,7 +25,7 @@ const getAdvice = (emaResult_9, emaResult_18, currentPrice, lastAdvice) => {
   }
 
   if (lastAdvice) {
-    if (lastAdvice !== advice) return { advice };
+    if (lastAdvice !== advice || Number(asset) === 0) return { advice };
     else return { advice: "hold" };
   } else {
     return { advice };
