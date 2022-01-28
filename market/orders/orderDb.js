@@ -8,7 +8,7 @@ const buyCoin = async (count, rate, username, market, averageBuyRate) => {
       const prevData = userData.user;
       const isUserUpdated = await Users.updateUser(prevData._id, {
         coinsCount: prevData.coinsCount + count,
-        balance: prevData.balance - count * rate
+        balance: prevData.balance - count * rate,
       });
       if (isUserUpdated && isUserUpdated.success) {
         const isTransactionCompleted = await Transactions.addTransaction({
@@ -17,7 +17,7 @@ const buyCoin = async (count, rate, username, market, averageBuyRate) => {
           cost: count * rate,
           side: "buy",
           market: market,
-          averageBuyRate
+          averageBuyRate,
         });
         if (isTransactionCompleted) {
           return { success: true };
@@ -26,7 +26,7 @@ const buyCoin = async (count, rate, username, market, averageBuyRate) => {
     }
     return { success: false };
   } catch (err) {
-    console.log("err: ", err)
+    console.log("err: ", err);
     return { success: false, err: err };
   }
 };
@@ -38,9 +38,9 @@ const sellCoin = async (count, rate, username, market, averageBuyRate) => {
       const prevData = userData.user;
       const isUserUpdated = await Users.updateUser(prevData._id, {
         coinsCount: prevData.coinsCount - count,
-        balance: prevData.balance + count * rate
+        balance: prevData.balance + count * rate,
       });
-      
+
       if (isUserUpdated && isUserUpdated.success) {
         const isTransactioncompleted = await Transactions.addTransaction({
           amount: count,
@@ -48,7 +48,7 @@ const sellCoin = async (count, rate, username, market, averageBuyRate) => {
           cost: count * rate,
           side: "sell",
           market: market,
-          averageBuyRate
+          averageBuyRate,
         });
         if (isTransactioncompleted) {
           return { success: true };
@@ -61,11 +61,24 @@ const sellCoin = async (count, rate, username, market, averageBuyRate) => {
   }
 };
 
-const placeOrder = async ({ userName, side, price, amount, market, averageBuyRate }) => {
+const placeOrder = async ({
+  userName,
+  side,
+  price,
+  amount,
+  market,
+  averageBuyRate,
+}) => {
   try {
     if (side === "buy") {
-      const newBuyTransaction = await buyCoin(amount, price, userName, market, averageBuyRate);
-      console.log("newBuyTransaction: ", newBuyTransaction)
+      const newBuyTransaction = await buyCoin(
+        amount,
+        price,
+        userName,
+        market,
+        averageBuyRate
+      );
+      console.log("newBuyTransaction: ", newBuyTransaction);
       return newBuyTransaction;
     } else {
       const newSellTransaction = await sellCoin(

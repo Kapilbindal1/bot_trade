@@ -12,7 +12,7 @@ const addTransaction = async (req) => {
     side,
     market: market,
     cost: cost,
-    averageBuyRate
+    averageBuyRate,
   });
 
   try {
@@ -40,8 +40,6 @@ const getUserTransactionsByUsername = async (userName) => {
     return { success: false, err: err };
   }
 };
-
-
 
 module.exports = {
   addTransaction,

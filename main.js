@@ -21,22 +21,28 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
 const run = async () => {
-  const botsArray = bots || []
-  for (let i = 0; i < bots.length; i+= 1){
+  const botsArray = bots || [];
+  for (let i = 0; i < bots.length; i += 1) {
     const bot = bots[i];
     const user_name = bot.name;
     const currentPrice = await Market.getCurrentPrice();
     const { averageRate } = await Account.getAverageBuyRate({
       currentPrice,
-      name: user_name
+      name: user_name,
     });
-    console.log("averageRate: ", averageRate, "  currentPrice: ", currentPrice, bot.name);
+    console.log(
+      "averageRate: ",
+      averageRate,
+      "  currentPrice: ",
+      currentPrice,
+      bot.name
+    );
     const { market, asset, base } = await Account.getBalance(user_name);
 
     if (bot.indicatorFunction) {
       let { quantity, side } = await bot.indicatorFunction({
         balance: base,
-        currentPrice
+        currentPrice,
       });
       console.log("Quantity: ", quantity, " side: ", side);
       if (side === "sell") {
@@ -44,7 +50,7 @@ const run = async () => {
           const sellData = bot.sellFunction({
             averageBuyRate: averageRate,
             currentPrice,
-            quantity: asset
+            quantity: asset,
           });
           quantity = sellData.quantity;
         }
@@ -56,7 +62,7 @@ const run = async () => {
             price: currentPrice,
             amount: quantity,
             market: market,
-            averageBuyRate: averageRate
+            averageBuyRate: averageRate,
           });
           return;
         }
@@ -64,7 +70,7 @@ const run = async () => {
         if (quantity === 0) {
           const buyData = await bot.buyFunction({
             balance: base,
-            currentPrice
+            currentPrice,
           });
           console.log("buyData.quantity: ", buyData.quantity);
           quantity = buyData.quantity;
@@ -75,7 +81,7 @@ const run = async () => {
             side: "buy",
             price: currentPrice,
             amount: quantity,
-            market: market
+            market: market,
           });
         }
       }
@@ -83,7 +89,7 @@ const run = async () => {
       let sellData = bot.sellFunction({
         averageBuyRate: averageRate,
         currentPrice,
-        quantity: asset
+        quantity: asset,
       });
 
       if (sellData.quantity > 0) {
@@ -93,7 +99,7 @@ const run = async () => {
           price: currentPrice,
           amount: sellData.quantity,
           market: market,
-          averageBuyRate: averageRate
+          averageBuyRate: averageRate,
         });
         return;
       }
@@ -106,92 +112,14 @@ const run = async () => {
           side: "buy",
           price: currentPrice,
           amount: buyData.quantity,
-          market: market
+          market: market,
         });
       }
     }
-  };
+  }
 };
 
 let cronTask;
-
-const trade1function = async (
-  bot,
-  market,
-  asset,
-  base,
-  averageRate,
-  currentPrice,
-  user_name
-) => {
-  let sellData = bot.sellFunction({
-    averageBuyRate: averageRate,
-    currentPrice,
-    quantity: asset
-  });
-
-  if (sellData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "sell",
-      price: currentPrice,
-      amount: sellData.quantity,
-      market: market,
-      averageBuyRate: averageRate
-    });
-    return;
-  }
-
-  const buyData = await bot.buyFunction({ balance: base, currentPrice });
-  if (buyData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "buy",
-      price: currentPrice,
-      amount: buyData.quantity,
-      market: market
-    });
-  }
-};
-
-const trade2function = async (
-  bot,
-  market,
-  asset,
-  base,
-  averageRate,
-  currentPrice,
-  user_name
-) => {
-  let { quantity, side } = bot.buyFunction({ balance: base, currentPrice });
-  if (side === "buy") {
-    await placeOrder({
-      userName: user_name,
-      side: "buy",
-      price: currentPrice,
-      amount: quantity,
-      market: market
-    });
-  } else if (side === "sell") {
-    let sellData = bot.sellFunction({
-      averageBuyRate: averageRate,
-      currentPrice,
-      quantity: asset
-    });
-
-    if (sellData.quantity > 0) {
-      await placeOrder({
-        userName: user_name,
-        side: "sell",
-        price: currentPrice,
-        amount: sellData.quantity,
-        market: market,
-        averageBuyRate: averageRate
-      });
-      return;
-    }
-  }
-};
 
 const main = async () => {
   await db.connect();
