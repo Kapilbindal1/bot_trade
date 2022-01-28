@@ -4,8 +4,6 @@ const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
-const Main = require("./utils/mainUtils");
-const { EMA, MACD } = require("./market/indicators");
 const { keepAlive } = require("./alive");
 
 const cron = require("node-cron");
