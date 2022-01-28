@@ -10,6 +10,7 @@ const config = require("../../constants/config");
 const indicator = async ({ balance, currentPrice, asset }) => {
   if (balance < config.minimumBuy)
     return { quantity: 0, message: "less than minimum balance" };
+    
   let historicalData_5m = await Market.getHistoricalData();
   let indicatorInputData_5m = MainUtils.getCloseInputData(historicalData_5m);
 
@@ -33,7 +34,7 @@ const indicator = async ({ balance, currentPrice, asset }) => {
   return adviceEMA;
 };
 
-const buy = ({ currentPrice }) => {
+const buy = ({ balance, currentPrice }) => {
   const amountForBuy = balance * 0.25 < 100 ? balance * 0.25 : 100;
   const quantityToBuy = amountForBuy / currentPrice;
   return { quantity: quantityToBuy };

@@ -37,7 +37,16 @@ const run = async () => {
         currentPrice,
         asset,
       });
-      console.log(user_name, " Advice: ", advice, currentPrice)
+      // console.log(user_name, " Advice: ", advice, currentPrice);
+      console.log("data===>", {
+        user_name,
+        currentPrice,
+        averageRate,
+        market,
+        asset,
+        advice,
+        base,
+      });
       if (advice === "sell" && asset > 0) {
         await placeOrder({
           userName: user_name,
@@ -49,9 +58,19 @@ const run = async () => {
         });
       } else if (advice === "buy") {
         const { quantity } = await bot.buyFunction({
+          balance: base,
           currentPrice,
         });
-
+        console.log("data===>", {
+          user_name,
+          currentPrice,
+          averageRate,
+          market,
+          asset,
+          advice,
+          base,
+          quantity,
+        });
         if (quantity > 0) {
           await placeOrder({
             userName: user_name,
