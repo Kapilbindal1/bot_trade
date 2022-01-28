@@ -4,8 +4,6 @@ const Account = require("./account");
 const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
-const Main = require("./utils/mainUtils");
-const { EMA, MACD } = require("./market/indicators");
 const { keepAlive } = require("./alive");
 
 const cron = require("node-cron");
@@ -114,84 +112,6 @@ const run = async () => {
 };
 
 let cronTask;
-
-const trade1function = async (
-  bot,
-  market,
-  asset,
-  base,
-  averageRate,
-  currentPrice,
-  user_name
-) => {
-  let sellData = bot.sellFunction({
-    averageBuyRate: averageRate,
-    currentPrice,
-    quantity: asset
-  });
-
-  if (sellData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "sell",
-      price: currentPrice,
-      amount: sellData.quantity,
-      market: market,
-      averageBuyRate: averageRate
-    });
-    return;
-  }
-
-  const buyData = await bot.buyFunction({ balance: base, currentPrice });
-  if (buyData.quantity > 0) {
-    await placeOrder({
-      userName: user_name,
-      side: "buy",
-      price: currentPrice,
-      amount: buyData.quantity,
-      market: market
-    });
-  }
-};
-
-const trade2function = async (
-  bot,
-  market,
-  asset,
-  base,
-  averageRate,
-  currentPrice,
-  user_name
-) => {
-  let { quantity, side } = bot.buyFunction({ balance: base, currentPrice });
-  if (side === "buy") {
-    await placeOrder({
-      userName: user_name,
-      side: "buy",
-      price: currentPrice,
-      amount: quantity,
-      market: market
-    });
-  } else if (side === "sell") {
-    let sellData = bot.sellFunction({
-      averageBuyRate: averageRate,
-      currentPrice,
-      quantity: asset
-    });
-
-    if (sellData.quantity > 0) {
-      await placeOrder({
-        userName: user_name,
-        side: "sell",
-        price: currentPrice,
-        amount: sellData.quantity,
-        market: market,
-        averageBuyRate: averageRate
-      });
-      return;
-    }
-  }
-};
 
 const main = async () => {
   await db.connect();

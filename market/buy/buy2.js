@@ -17,7 +17,8 @@ const buy = async ({ balance, currentPrice }) => {
   let EMA_result_5m_18 = EMA.calculateEMAValue(indicatorInputData_5m, 18);
   const adviceEMA = EMA.getAdvice(
     EMA_result_5m_9[EMA_result_5m_9.length - 1],
-    EMA_result_5m_18[EMA_result_5m_18.length - 1]
+    EMA_result_5m_18[EMA_result_5m_18.length - 1],
+    currentPrice
   );
 
   if (adviceEMA.advice === "buy") {
