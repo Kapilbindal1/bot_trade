@@ -12,8 +12,8 @@ const getAdvice = (
   emaResult_9,
   emaResult_18,
   currentPrice,
-  lastAdvice,
-  asset
+  // lastAdvice,
+  // asset
 ) => {
   let advice = "hold";
   if (emaResult_9 > emaResult_18 && currentPrice > emaResult_9) {
@@ -24,12 +24,13 @@ const getAdvice = (
     advice = "sell";
   }
 
-  if (lastAdvice) {
-    if (lastAdvice !== advice || Number(asset) === 0) return { advice };
-    else return { advice: "hold" };
-  } else {
-    return { advice };
-  }
+  // if (lastAdvice) {
+  //   if (lastAdvice !== advice || Number(asset) === 0) return { advice };
+  //   else return { advice: "hold" };
+  // } else {
+  //   return { advice };
+  // }
+  return { advice };
 };
 
 module.exports = { calculateEMAValue, getAdvice };

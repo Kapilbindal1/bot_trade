@@ -1,5 +1,5 @@
 /**
- * It's a combination of RSI and MACD for 5 min interval
+ * It's a combination of EMA9 and EMA18 for 5 min interval
  */
 
 const Market = require("../index");
@@ -16,19 +16,19 @@ const indicator = async ({ balance, currentPrice, asset }) => {
 
   let EMA_result_5m_9 = EMA.calculateEMAValue(indicatorInputData_5m, 9);
   let EMA_result_5m_18 = EMA.calculateEMAValue(indicatorInputData_5m, 18);
-  const prevAdviceEMA = EMA.getAdvice(
-    EMA_result_5m_9[EMA_result_5m_9.length - 2],
-    EMA_result_5m_18[EMA_result_5m_18.length - 2],
-    currentPrice,
-    null,
-    asset
-  );
+  // const prevAdviceEMA = EMA.getAdvice(
+  //   EMA_result_5m_9[EMA_result_5m_9.length - 2],
+  //   EMA_result_5m_18[EMA_result_5m_18.length - 2],
+  //   currentPrice,
+  //   // null,
+  //   // asset
+  // );
   const adviceEMA = EMA.getAdvice(
     EMA_result_5m_9[EMA_result_5m_9.length - 1],
     EMA_result_5m_18[EMA_result_5m_18.length - 1],
     currentPrice,
-    prevAdviceEMA.advice,
-    asset
+    // prevAdviceEMA.advice,
+    // asset
   );
 
   return adviceEMA;

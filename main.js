@@ -5,6 +5,7 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
+const { shouldSell } = require("./utils/mainUtils");
 
 const cron = require("node-cron");
 
@@ -47,7 +48,11 @@ const run = async () => {
         advice,
         base,
       });
-      if (advice === "sell" && asset > 0) {
+      if (
+        advice === "sell" &&
+        asset > 0 &&
+        shouldSell(currentPrice, averageRate)
+      ) {
         await placeOrder({
           userName: user_name,
           side: "sell",
@@ -56,7 +61,7 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
-      } else if (advice === "buy") {
+      } else if (advice === "buy" && asset === 0) {
         const { quantity } = await bot.buyFunction({
           balance: base,
           currentPrice,
@@ -120,7 +125,7 @@ let cronTask;
 const main = async () => {
   await db.connect();
   run();
-  cron.schedule("* * * * *", () => {
+  cron.schedule("*/5 * * * *", () => {
     run();
   });
 };
