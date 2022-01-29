@@ -7,7 +7,7 @@ const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
 
 const cron = require("node-cron");
-
+const Logs = require("./db/logs");
 // DB related imports
 const db = require("./db");
 // dotEnv.config();
@@ -37,6 +37,15 @@ const run = async () => {
         currentPrice,
         asset,
       });
+      Logs.addLog({
+        advice: advice,
+        currentPrice: currentPrice,
+        userName: user_name,
+        isBuySellSuccessful: "inProgress",
+        balance: base,
+        market: market,
+        asset: asset
+      })
       // console.log(user_name, " Advice: ", advice, currentPrice);
       console.log("data===>", {
         user_name,
@@ -56,6 +65,15 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        Logs.addLog({
+            advice: advice,
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: "sucessfully done",
+            balance: base,
+            market: market,
+            asset: asset
+          })
       } else if (advice === "buy") {
         const { quantity } = await bot.buyFunction({
           balance: base,
@@ -79,6 +97,15 @@ const run = async () => {
             amount: quantity,
             market: market,
           });
+          Logs.addLog({
+            advice: advice,
+            currentPrice: currentPrice,
+            userName: userName,
+            isBuySellSuccessful: "sucessfully done",
+            balance: base,
+            market: market,
+            asset: asset
+          })
         }
       } else return;
     } else {
@@ -97,6 +124,15 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        Logs.addLog({
+            advice: "sell",
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: "sucessfully done",
+            balance: base,
+            market: market,
+            asset: asset
+          })
         return;
       }
 
@@ -110,6 +146,15 @@ const run = async () => {
           amount: buyData.quantity,
           market: market,
         });
+        Logs.addLog({
+            advice: "buy",
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: "sucessfully done",
+            balance: base,
+            market: market,
+            asset: asset
+          })
       }
     }
   }
