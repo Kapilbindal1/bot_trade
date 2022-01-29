@@ -8,7 +8,8 @@ const logsSchema = new schema({
     isBuySellSuccessful: { type: Number, required: true },
     balance: { type: String, required: true },
     market: { type: String, required: true},
-    asset: { type: String, required: true }
+    asset: { type: String, required: true },
+    quantity: { type: Number, required: true },
 });
 
 module.exports = Logs = mongoose.model('logs', logsSchema);

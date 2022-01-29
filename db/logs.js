@@ -1,9 +1,9 @@
 const Logs = require("./schemas/logs");
 
 const addLog =  (data) => {
-    const { advice, currentPrice, userName, isBuySellSuccessful, balance, market, asset } = data;
+    const { advice, currentPrice, userName, isBuySellSuccessful, balance, market, asset, quantity } = data;
 
-    if (!advice || !currentPrice || !userName || !isBuySellSuccessful || !balance || !market || !asset) {
+    if (!advice || !currentPrice || !userName || !isBuySellSuccessful || !balance || !market || !asset || !quantity) {
         return { success: false };
     }
     const newLog = new Logs({
@@ -13,7 +13,8 @@ const addLog =  (data) => {
         isBuySellSuccessful,
         balance,
         market,
-        asset
+        asset,
+        quantity
     });
 
     try {

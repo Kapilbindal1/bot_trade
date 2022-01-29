@@ -30,7 +30,7 @@ const run = async () => {
     });
 
     const { market, asset, base } = await Account.getBalance(user_name);
-
+    let status = "progress";
     if (bot.indicatorFunction) {
       let { advice } = await bot.indicatorFunction({
         balance: base,
@@ -41,10 +41,11 @@ const run = async () => {
         advice: advice,
         currentPrice: currentPrice,
         userName: user_name,
-        isBuySellSuccessful: "inProgress",
+        isBuySellSuccessful: status,
         balance: base,
         market: market,
-        asset: asset
+        asset: asset,
+        quantity: 0
       })
       // console.log(user_name, " Advice: ", advice, currentPrice);
       console.log("data===>", {
@@ -65,14 +66,16 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        status = "success";
         Logs.addLog({
             advice: advice,
             currentPrice: currentPrice,
             userName: user_name,
-            isBuySellSuccessful: "sucessfully done",
+            isBuySellSuccessful: status,
             balance: base,
             market: market,
-            asset: asset
+            asset: asset,
+            quantity: asset
           })
       } else if (advice === "buy") {
         const { quantity } = await bot.buyFunction({
@@ -97,14 +100,16 @@ const run = async () => {
             amount: quantity,
             market: market,
           });
+          status = "success";
           Logs.addLog({
             advice: advice,
             currentPrice: currentPrice,
             userName: userName,
-            isBuySellSuccessful: "sucessfully done",
+            isBuySellSuccessful: status,
             balance: base,
             market: market,
-            asset: asset
+            asset: asset,
+            quantity: quantity
           })
         }
       } else return;
@@ -124,14 +129,16 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        status = "success";
         Logs.addLog({
             advice: "sell",
             currentPrice: currentPrice,
             userName: user_name,
-            isBuySellSuccessful: "sucessfully done",
+            isBuySellSuccessful: status,
             balance: base,
             market: market,
-            asset: asset
+            asset: asset,
+            quantity: sellData.quantity
           })
         return;
       }
@@ -146,14 +153,16 @@ const run = async () => {
           amount: buyData.quantity,
           market: market,
         });
+        status = "success";
         Logs.addLog({
             advice: "buy",
             currentPrice: currentPrice,
             userName: user_name,
-            isBuySellSuccessful: "sucessfully done",
+            isBuySellSuccessful: status,
             balance: base,
             market: market,
-            asset: asset
+            asset: asset,
+            quantity: buyData.quantity
           })
       }
     }
