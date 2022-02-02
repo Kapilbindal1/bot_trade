@@ -5,22 +5,17 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
-const { shouldSell } = require("./utils/mainUtils");
+const { shouldSell, sellAdvice } = require("./utils/mainUtils");
 
 const cron = require("node-cron");
 
-// DB related imports
 const db = require("./db");
-// dotEnv.config();
-// const token = process.env.BOT_TOKEN;
-// const bot = new TelegramBot(token, { polling: true });
 
 const app = express();
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
 const run = async () => {
-  const botsArray = bots || [];
   for (let i = 0; i < bots.length; i += 1) {
     const bot = bots[i];
     const user_name = bot.name;
@@ -38,16 +33,6 @@ const run = async () => {
         currentPrice,
         asset,
       });
-      // console.log(user_name, " Advice: ", advice, currentPrice);
-      console.log("data===>", {
-        user_name,
-        currentPrice,
-        averageRate,
-        market,
-        asset,
-        advice,
-        base,
-      });
       if (
         advice === "sell" &&
         asset > 0 &&
@@ -61,29 +46,49 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
-      } else if (advice === "buy" && asset === 0) {
-        const { quantity } = await bot.buyFunction({
-          balance: base,
-          currentPrice,
-        });
-        console.log("data===>", {
-          user_name,
-          currentPrice,
-          averageRate,
-          market,
-          asset,
-          advice,
-          base,
-          quantity,
-        });
-        if (quantity > 0) {
-          await placeOrder({
-            userName: user_name,
-            side: "buy",
-            price: currentPrice,
-            amount: quantity,
-            market: market,
+      } else if (advice === "buy") {
+        if (asset > 0) {
+          switch (sellAdvice(averageRate, currentPrice, pendingAsset, asset)) {
+            case "SELL_HALF": {
+              await placeOrder({
+                userName: user_name,
+                side: "sell",
+                price: currentPrice,
+                amount: asset / 2,
+                market: market,
+                averageBuyRate: averageRate,
+              });
+              break;
+            }
+            case "SELL_ALL": {
+              await placeOrder({
+                userName: user_name,
+                side: "sell",
+                price: currentPrice,
+                amount: asset,
+                market: market,
+                averageBuyRate: averageRate,
+              });
+              break;
+            }
+            default:
+              return;
+          }
+        } else {
+          const { quantity } = await bot.buyFunction({
+            balance: base,
+            currentPrice,
           });
+
+          if (quantity > 0) {
+            await placeOrder({
+              userName: user_name,
+              side: "buy",
+              price: currentPrice,
+              amount: quantity,
+              market: market,
+            });
+          }
         }
       } else return;
     } else {
@@ -106,7 +111,6 @@ const run = async () => {
       }
 
       const buyData = await bot.buyFunction({ balance: base, currentPrice });
-      console.log("buyData.quantity: ", buyData.quantity);
       if (buyData.quantity > 0) {
         await placeOrder({
           userName: user_name,
