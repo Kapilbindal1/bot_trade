@@ -1,7 +1,8 @@
 const Transactions = require("./schemas/transactions");
 
 const addTransaction = async (req) => {
-  const { amount, userName, side, cost, market, averageBuyRate } = req;
+  const { amount, userName, side, cost, market, pendingAsset, averageBuyRate } =
+    req;
 
   if (!userName || !side || !market || !amount) {
     return { success: false };
@@ -13,12 +14,16 @@ const addTransaction = async (req) => {
     market: market,
     cost: cost,
     averageBuyRate,
+    pendingAsset,
   });
 
   try {
     await newEntry.save();
+    console.log("fgsdfg");
     return { success: true };
   } catch (err) {
+    console.log("error", error);
+
     return { success: false, err: err };
   }
 };

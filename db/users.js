@@ -9,7 +9,7 @@ const addUser = async (data) => {
   const newUser = new User({
     name: name,
     coinsCount: coinsCount,
-    balance: balance
+    balance: balance,
   });
   try {
     const user = await newUser.save();
@@ -47,8 +47,8 @@ const updateUser = async (userId, data) => {
       {
         $set: {
           coinsCount: coinsCount,
-          balance: balance
-        }
+          balance: balance,
+        },
       }
     );
     return { success: true };
@@ -64,7 +64,7 @@ const getOrCreateUserByName = async (name) => {
       const addUserData = await addUser({
         name,
         coinsCount: 0,
-        balance: config.initialUserBalance
+        balance: config.initialUserBalance,
       });
       return addUserData;
     }
@@ -80,5 +80,5 @@ module.exports = {
   getUsers,
   getUserByName,
   updateUser,
-  getOrCreateUserByName
+  getOrCreateUserByName,
 };

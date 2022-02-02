@@ -1,7 +1,14 @@
 const Users = require("../../db/users");
 const Transactions = require("../../db/transactions");
 
-const buyCoin = async (count, rate, username, market, averageBuyRate) => {
+const buyCoin = async (
+  count,
+  rate,
+  username,
+  market,
+  averageBuyRate,
+  pendingAsset
+) => {
   try {
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
@@ -18,6 +25,7 @@ const buyCoin = async (count, rate, username, market, averageBuyRate) => {
           side: "buy",
           market: market,
           averageBuyRate,
+          pendingAsset,
         });
         if (isTransactionCompleted) {
           return { success: true };
@@ -31,7 +39,14 @@ const buyCoin = async (count, rate, username, market, averageBuyRate) => {
   }
 };
 
-const sellCoin = async (count, rate, username, market, averageBuyRate) => {
+const sellCoin = async (
+  count,
+  rate,
+  username,
+  market,
+  averageBuyRate,
+  pendingAsset
+) => {
   try {
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
@@ -42,6 +57,7 @@ const sellCoin = async (count, rate, username, market, averageBuyRate) => {
       });
 
       if (isUserUpdated && isUserUpdated.success) {
+        console.log("isUserUpdated");
         const isTransactioncompleted = await Transactions.addTransaction({
           amount: count,
           userName: username,
@@ -49,6 +65,7 @@ const sellCoin = async (count, rate, username, market, averageBuyRate) => {
           side: "sell",
           market: market,
           averageBuyRate,
+          pendingAsset,
         });
         if (isTransactioncompleted) {
           return { success: true };
@@ -68,6 +85,7 @@ const placeOrder = async ({
   amount,
   market,
   averageBuyRate,
+  pendingAsset,
 }) => {
   try {
     if (side === "buy") {
@@ -76,7 +94,8 @@ const placeOrder = async ({
         price,
         userName,
         market,
-        averageBuyRate
+        averageBuyRate,
+        pendingAsset
       );
       console.log("newBuyTransaction: ", newBuyTransaction);
       return newBuyTransaction;
@@ -86,7 +105,8 @@ const placeOrder = async ({
         price,
         userName,
         market,
-        averageBuyRate
+        averageBuyRate,
+        pendingAsset
       );
       return newSellTransaction;
     }

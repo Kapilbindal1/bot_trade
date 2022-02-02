@@ -6,6 +6,7 @@ const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
 const { shouldSell, sellAdvice } = require("./utils/mainUtils");
+const Transactions = require("./db/transactions");
 
 const cron = require("node-cron");
 
@@ -24,7 +25,7 @@ const run = async () => {
       currentPrice,
       name: user_name,
     });
-
+    const { pendingAsset } = await Transactions.getTransactions();
     const { market, asset, base } = await Account.getBalance(user_name);
 
     if (bot.indicatorFunction) {
@@ -66,6 +67,7 @@ const run = async () => {
           amount: asset,
           market: market,
           averageBuyRate: averageRate,
+          pendingAsset: 0,
         });
       } else if (advice === "buy") {
         if (asset > 0) {
@@ -78,6 +80,7 @@ const run = async () => {
                 amount: asset / 2,
                 market: market,
                 averageBuyRate: averageRate,
+                pendingAsset: pendingAsset + 1,
               });
               break;
             }
@@ -89,6 +92,7 @@ const run = async () => {
                 amount: asset,
                 market: market,
                 averageBuyRate: averageRate,
+                pendingAsset: 0,
               });
               break;
             }
