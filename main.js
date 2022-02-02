@@ -33,6 +33,27 @@ const run = async () => {
         currentPrice,
         asset,
       });
+
+      console.log(
+        "SOL_TRADE-> ",
+        user_name,
+        "....",
+        "BALANCE-> ",
+        base,
+        "....",
+        "ADVICE-> ",
+        advice,
+        "....",
+        "CURRENT_PRICE-> ",
+        currentPrice,
+        "....",
+        "COINS-> ",
+        asset,
+        "....",
+        "BUY_PRICE-> ",
+        averageRate
+      );
+
       if (
         advice === "sell" &&
         asset > 0 &&
