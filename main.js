@@ -150,7 +150,7 @@ let cronTask;
 const main = async () => {
   await db.connect();
   run();
-  cron.schedule("*/5 * * * *", () => {
+  cron.schedule("* * * * *", () => {
     run();
   });
 };
