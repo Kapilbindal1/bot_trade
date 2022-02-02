@@ -36,17 +36,17 @@ const run = async () => {
       });
 
       console.log(
-        "SOL_TRADE-> ",
+        "SOL_TRADE ",
         user_name,
-        "BALANCE-> ",
+        "BALANCE ",
         base,
-        "ADVICE-> ",
+        "ADVICE ",
         advice,
-        "CURRENT_PRICE-> ",
+        "CURRENT_PRICE ",
         currentPrice,
-        "COINS-> ",
+        "COINS ",
         asset,
-        "BUY_PRICE-> ",
+        "BUY_PRICE ",
         averageRate
       );
 
