@@ -17,7 +17,7 @@ const keepAlive = () => {
       .then(function () {
         // always executed
       });
-  }, 5 * 60 * 1000);
+  }, 3 * 60 * 1000);
 };
 
 module.exports = { keepAlive };
