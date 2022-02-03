@@ -1,4 +1,5 @@
-const { buy2 } = require("./market/buy");
+const { buy1, buy2 } = require("./market/buy");
+const { sell1 } = require("./market/sell");
 
 const bots = [
   {
