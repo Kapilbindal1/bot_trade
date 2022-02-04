@@ -10,7 +10,6 @@ const Transactions = require("./db/transactions");
 const config = require("./constants/config");
 
 const cron = require("node-cron");
-
 const db = require("./db");
 
 const app = express();
@@ -28,7 +27,7 @@ const run = async () => {
     });
     const { pendingAsset } = await Transactions.getTransactions();
     const { market, asset, base } = await Account.getBalance(user_name);
-
+    let status = "progress";
     if (bot.indicatorFunction) {
       let { advice } = await bot.indicatorFunction({
         balance: base,
@@ -64,6 +63,17 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
           pendingAsset: 0,
+        });
+        status = "success";
+        Logs.addLog({
+          advice: advice,
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: asset,
         });
       } else if (advice === "buy") {
         if (balance < config.minimumBuy) return;
@@ -129,6 +139,17 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        status = "success";
+        Logs.addLog({
+          advice: "sell",
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: sellData.quantity,
+        });
         return;
       }
 
@@ -140,6 +161,17 @@ const run = async () => {
           price: currentPrice,
           amount: buyData.quantity,
           market: market,
+        });
+        status = "success";
+        Logs.addLog({
+          advice: "buy",
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: buyData.quantity,
         });
       }
     }
