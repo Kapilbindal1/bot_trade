@@ -17,12 +17,7 @@ const buy = async ({ balance, currentPrice }) => {
   let MACD_result_5m = MACD.calculateMACDValue(indicatorInputData_5m);
   const adviceRSI = RSI.getAdvice(RSI_result_5m);
   const adviceMACD = MACD.getAdvice(MACD_result_5m);
-  console.log(
-    "adviceMACD.advice: ",
-    adviceMACD.advice,
-    "  adviceRSI.advice: ",
-    adviceRSI.advice
-  );
+
   if (
     adviceMACD.advice === "buy" &&
     (adviceRSI.advice === "buy" || adviceRSI.advice === "hold")

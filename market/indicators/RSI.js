@@ -1,19 +1,16 @@
-var RSI = require('technicalindicators').RSI;
+var RSI = require("technicalindicators").RSI;
+const { isRSIIncreasing } = require("./utils");
 
-const calculateRSIValue = (values)=> {
-    var inputRSI = {
-        values ,
-        period : 14
-      };
-   return RSI.calculate(inputRSI);
-}
-
+const calculateRSIValue = (values) => {
+  var inputRSI = {
+    values,
+    period: 14,
+  };
+  return RSI.calculate(inputRSI);
+};
 
 const getAdvice = (rsiResult) => {
   const adviceArray = [];
-  // for (let i = 0; i < bbResult.length; i += 1) {
-    
-  // }
   const i = rsiResult.length - 1;
   let advice = "hold";
   if (rsiResult[i] <= 30) {
@@ -24,7 +21,16 @@ const getAdvice = (rsiResult) => {
     advice = "hold";
   }
   adviceArray.push(advice);
-  return {advice, value: rsiResult[i]};
+  return { advice, value: rsiResult[i] };
 };
 
-module.exports = { calculateRSIValue, getAdvice }
+const getBuy3Advice = (rsiResult) => {
+  const i = rsiResult.length - 1;
+  if (rsiResult[i] > 50 && isRSIIncreasing(rsiResult)) {
+    return "buy";
+  } else {
+    return "sell";
+  }
+};
+
+module.exports = { calculateRSIValue, getAdvice, getBuy3Advice };

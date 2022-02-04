@@ -7,6 +7,7 @@ const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
 const { shouldSell, sellAdvice } = require("./utils/mainUtils");
 const Transactions = require("./db/transactions");
+const config = require("./constants/config");
 
 const cron = require("node-cron");
 
@@ -65,6 +66,7 @@ const run = async () => {
           pendingAsset: 0,
         });
       } else if (advice === "buy") {
+        if (balance < config.minimumBuy) return;
         if (asset > 0) {
           switch (sellAdvice(averageRate, currentPrice, pendingAsset, asset)) {
             case "SELL_HALF": {

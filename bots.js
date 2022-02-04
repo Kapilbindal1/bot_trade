@@ -1,16 +1,11 @@
-const { buy1, buy2 } = require("./market/buy");
+const { buy1, buy3 } = require("./market/buy");
 const { sell1 } = require("./market/sell");
 
 const bots = [
   {
-    name: "test_201",
-    buyFunction: buy1.buy,
-    sellFunction: sell1.sell,
-  },
-  {
-    name: "Yash_Bhuvan_SOL",
-    buyFunction: buy2.buy,
-    indicatorFunction: buy2.indicator,
+    name: "TESTING_THREE_INDICATORS",
+    buyFunction: buy3.buy,
+    indicatorFunction: buy3.indicator,
   },
 ];
 

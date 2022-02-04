@@ -7,18 +7,14 @@ const calculateMACDValue = (values) => {
     slowPeriod: 26,
     signalPeriod: 9,
     SimpleMAOscillator: false,
-    SimpleMASignal: false
+    SimpleMASignal: false,
   };
   return MACD.calculate(inputRSI);
 };
 
 const getAdvice = (macdResult) => {
   const adviceArray = [];
-  // for (let i = 0; i < macdResult.length; i += 1) {
-    
-  // }
-
-  const i =macdResult.length - 1;
+  const i = macdResult.length - 1;
   let advice = "hold";
   if (
     macdResult[i].MACD > macdResult[i].signal &&
@@ -34,9 +30,16 @@ const getAdvice = (macdResult) => {
     advice = "hold";
   }
 
-  adviceArray.push(advice)
+  adviceArray.push(advice);
 
-  return {advice, value: macdResult[i].histogram};
+  return { advice, value: macdResult[i].histogram };
 };
 
-module.exports = { calculateMACDValue, getAdvice };
+const getBuy3Advice = (macdResult) => {
+  const i = macdResult.length - 1;
+  if (macdResult[i].MACD > macdResult[i].signal) {
+    return "buy";
+  } else return "sell";
+};
+
+module.exports = { calculateMACDValue, getAdvice, getBuy3Advice };

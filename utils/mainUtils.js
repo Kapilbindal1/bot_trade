@@ -1,5 +1,20 @@
 const getCloseInputData = (array) => {
-  return array.map((val) => val.close);
+  return getArray(array, "close");
+};
+
+const getStochasticInputData = (array) => {
+  let high = getArray(array, "high");
+  let low = getArray(array, "low");
+  let close = getArray(array, "close");
+  return {
+    high,
+    low,
+    close,
+  };
+};
+
+const getArray = (array, field) => {
+  return array.map((val) => val[field]);
 };
 
 const shouldSell = (currentPrice, averagePrice) => {
@@ -33,4 +48,9 @@ const isStoplossHit = (avgBuyRate, currentPrice) => {
   } else return;
 };
 
-module.exports = { getCloseInputData, shouldSell, sellAdvice };
+module.exports = {
+  getCloseInputData,
+  shouldSell,
+  sellAdvice,
+  getStochasticInputData,
+};
