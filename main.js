@@ -26,8 +26,6 @@ const addLogsToTable = (
   asset,
   description
 ) => {
-  console.log("description", description);
-
   Logs.addLog({
     userName: user_name,
     advice: advice,
