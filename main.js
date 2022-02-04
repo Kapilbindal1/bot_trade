@@ -5,16 +5,41 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
-const { shouldSell, sellAdvice } = require("./utils/mainUtils");
+const { shouldSell, sellAdvice, getDescription } = require("./utils/mainUtils");
 const Transactions = require("./db/transactions");
 const config = require("./constants/config");
-
+const Logs = require("./db/logs");
 const cron = require("node-cron");
 const db = require("./db");
 
 const app = express();
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
+
+const addLogsToTable = (
+  user_name,
+  advice,
+  currentPrice,
+  status,
+  base,
+  market,
+  asset,
+  description
+) => {
+  console.log("description", description);
+
+  Logs.addLog({
+    userName: user_name,
+    advice: advice,
+    currentPrice: currentPrice,
+    isBuySellSuccessful: status,
+    balance: base,
+    market: market,
+    asset: asset,
+    quantity: asset,
+    description: description,
+  });
+};
 
 const run = async () => {
   for (let i = 0; i < bots.length; i += 1) {
@@ -29,25 +54,28 @@ const run = async () => {
     const { market, asset, base } = await Account.getBalance(user_name);
     let status = "progress";
     if (bot.indicatorFunction) {
-      let { advice } = await bot.indicatorFunction({
+      let { advice, indicatorResult } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
         asset,
       });
 
-      console.log(
-        "SOL_TRADE ",
+      addLogsToTable(
         user_name,
-        "BALANCE ",
-        base,
-        "ADVICE ",
         advice,
-        "CURRENT_PRICE ",
         currentPrice,
-        "COINS ",
+        false,
+        base,
+        market,
         asset,
-        "BUY_PRICE ",
-        averageRate
+        getDescription(
+          advice,
+          asset,
+          currentPrice,
+          averageRate,
+          pendingAsset,
+          indicatorResult
+        )
       );
 
       if (
@@ -64,17 +92,23 @@ const run = async () => {
           averageBuyRate: averageRate,
           pendingAsset: 0,
         });
-        status = "success";
-        Logs.addLog({
-          advice: advice,
-          currentPrice: currentPrice,
-          userName: user_name,
-          isBuySellSuccessful: status,
-          balance: base,
-          market: market,
-          asset: asset,
-          quantity: asset,
-        });
+        addLogsToTable(
+          user_name,
+          advice,
+          currentPrice,
+          true,
+          base,
+          market,
+          asset,
+          getDescription(
+            advice,
+            asset,
+            currentPrice,
+            averageRate,
+            pendingAsset,
+            indicatorResult
+          )
+        );
       } else if (advice === "buy") {
         if (balance < config.minimumBuy) return;
         if (asset > 0) {
@@ -89,6 +123,23 @@ const run = async () => {
                 averageBuyRate: averageRate,
                 pendingAsset: pendingAsset + 1,
               });
+              addLogsToTable(
+                user_name,
+                advice,
+                currentPrice,
+                true,
+                base,
+                market,
+                asset,
+                getDescription(
+                  advice,
+                  asset,
+                  currentPrice,
+                  averageRate,
+                  pendingAsset,
+                  indicatorResult
+                )
+              );
               break;
             }
             case "SELL_ALL": {
@@ -101,6 +152,23 @@ const run = async () => {
                 averageBuyRate: averageRate,
                 pendingAsset: 0,
               });
+              addLogsToTable(
+                user_name,
+                advice,
+                currentPrice,
+                true,
+                base,
+                market,
+                asset,
+                getDescription(
+                  advice,
+                  asset,
+                  currentPrice,
+                  averageRate,
+                  pendingAsset,
+                  indicatorResult
+                )
+              );
               break;
             }
             default:

@@ -48,9 +48,51 @@ const isStoplossHit = (avgBuyRate, currentPrice) => {
   } else return;
 };
 
+const getDescription = (
+  advice,
+  asset,
+  currentPrice,
+  averageRate,
+  pendingAsset,
+  indicatorResult
+) => {
+  if (advice === "sell") {
+    let difference = currentPrice - averageRate;
+    let percentage = (Math.abs(averageRate - currentPrice) / averageRate) * 100;
+    return `Our Asset is;-${asset}. ${indicatorResult}. Advice is:-${advice}. ${
+      difference > 0 ? "Profit on assst is:-" : "Loss on asset is:-"
+    }${percentage}. We CAN ${
+      shouldSell(currentPrice, averageRate)
+        ? "SELL our asset."
+        : "NOT SELL our asset."
+    }`;
+  } else if (advice === "buy") {
+    if (asset === 0) {
+      return `Our Asset is;-${asset}. ${indicatorResult}. Advice is:-${advice}. We CAN BUY some asset.`;
+    } else {
+      let avgBuyRate = averageRate * Math.pow(1.025, pendingAsset);
+      let percent = ((currentPrice - avgBuyRate) * 100) / avgBuyRate;
+      return `Our Asset is;-${asset}. ${indicatorResult}. Advice is:-${advice}. ${
+        percent > 2.5
+          ? "We CAN SELL 50% of our asset."
+          : percent > 0
+          ? "We WILL HOLD our position."
+          : `We have LOSS of ${Math.abs(percent)}%.${
+              percent >= 1.5
+                ? "We WILL SELL our all assets"
+                : "We WILL HOLD our position."
+            }`
+      }`;
+    }
+  } else {
+    return `Our Asset is;-${asset}. ${indicatorResult}. Advice is:-${advice}.`;
+  }
+};
+
 module.exports = {
   getCloseInputData,
   shouldSell,
   sellAdvice,
   getStochasticInputData,
+  getDescription,
 };

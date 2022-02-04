@@ -15,24 +15,17 @@ const indicator = async () => {
   const adviceRSI = RSI.getBuy3Advice(RSIResult);
   const adviceSTOCH = STOCH.getBuy3Advice(STOCHResult);
 
-  console.log(
-    "adviceMACD",
-    adviceMACD,
-    "adviceRSI",
-    adviceRSI,
-    "adviceSTOCH",
-    adviceSTOCH
-  );
+  const indicatorResult = `MACD Advice is:-${adviceMACD}. RSI Advice is:-${adviceRSI}. STOCH Advice is:-${adviceSTOCH}`;
 
   if (adviceMACD === "buy" && adviceRSI === "buy" && adviceSTOCH === "buy")
-    return { advice: "buy" };
+    return { advice: "buy", indicatorResult };
   else if (
     adviceMACD === "sell" &&
     adviceRSI === "sell" &&
     adviceSTOCH === "sell"
   )
-    return { advice: "sell" };
-  else return { advice: "hold" };
+    return { advice: "sell", indicatorResult };
+  else return { advice: "hold", indicatorResult };
 };
 
 const buy = ({ balance, currentPrice }) => {
