@@ -9,7 +9,8 @@ const { shouldSell, sellAdvice } = require("./utils/mainUtils");
 const Transactions = require("./db/transactions");
 
 const cron = require("node-cron");
-
+const Logs = require("./db/logs");
+// DB related imports
 const db = require("./db");
 
 const app = express();
@@ -27,7 +28,7 @@ const run = async () => {
     });
     const { pendingAsset } = await Transactions.getTransactions();
     const { market, asset, base } = await Account.getBalance(user_name);
-
+    let status = "progress";
     if (bot.indicatorFunction) {
       let { advice } = await bot.indicatorFunction({
         balance: base,
@@ -35,20 +36,18 @@ const run = async () => {
         asset,
       });
 
-      console.log(
-        "SOL_TRADE ",
-        user_name,
-        "BALANCE ",
-        base,
-        "ADVICE ",
-        advice,
-        "CURRENT_PRICE ",
-        currentPrice,
-        "COINS ",
-        asset,
-        "BUY_PRICE ",
-        averageRate
-      );
+      // console.log(
+      //   "SOL_TRADE ",
+      // Logs.addLog({
+      //   advice: advice,
+      //   currentPrice: currentPrice,
+      //   userName: user_name,
+      //   isBuySellSuccessful: status,
+      //   balance: base,
+      //   market: market,
+      //   asset: asset,
+      //   quantity: 0
+      // }))
 
       if (
         advice === "sell" &&
@@ -64,6 +63,17 @@ const run = async () => {
           averageBuyRate: averageRate,
           pendingAsset: 0,
         });
+        status = "success";
+        Logs.addLog({
+            advice: advice,
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: status,
+            balance: base,
+            market: market,
+            asset: asset,
+            quantity: asset
+          })
       } else if (advice === "buy") {
         if (asset > 0) {
           switch (sellAdvice(averageRate, currentPrice, pendingAsset, asset)) {
@@ -109,6 +119,17 @@ const run = async () => {
               market: market,
             });
           }
+          status = "success";
+          Logs.addLog({
+            advice: advice,
+            currentPrice: currentPrice,
+            userName: userName,
+            isBuySellSuccessful: status,
+            balance: base,
+            market: market,
+            asset: asset,
+            quantity: quantity
+          })
         }
       } else return;
     } else {
@@ -127,6 +148,17 @@ const run = async () => {
           market: market,
           averageBuyRate: averageRate,
         });
+        status = "success";
+        Logs.addLog({
+            advice: "sell",
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: status,
+            balance: base,
+            market: market,
+            asset: asset,
+            quantity: sellData.quantity
+          })
         return;
       }
 
@@ -139,6 +171,17 @@ const run = async () => {
           amount: buyData.quantity,
           market: market,
         });
+        status = "success";
+        Logs.addLog({
+            advice: "buy",
+            currentPrice: currentPrice,
+            userName: user_name,
+            isBuySellSuccessful: status,
+            balance: base,
+            market: market,
+            asset: asset,
+            quantity: buyData.quantity
+          })
       }
     }
   }
