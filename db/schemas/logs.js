@@ -5,7 +5,7 @@ const logsSchema = new schema({
     advice: { type: String, required: true },
     currentPrice: { type: Number, required: true }, 
     userName: { type: String, required: true },
-    isBuySellSuccessful: { type: Number, required: true },
+    isBuySellSuccessful: { type: String, required: true },
     balance: { type: String, required: true },
     market: { type: String, required: true},
     asset: { type: String, required: true },
