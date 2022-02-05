@@ -25,7 +25,7 @@ const addLog =  (data) => {
     }
 };
 
-const getLogs = (query = {}) => {
+const getLogs = async (query = {}) => {
     try {
         const transactions = await Transactions.find(query);
         return { success: true, transactions };
