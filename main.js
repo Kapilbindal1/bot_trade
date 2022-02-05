@@ -123,7 +123,7 @@ const run = async () => {
           Logs.addLog({
             advice: advice,
             currentPrice: currentPrice,
-            userName: userName,
+            userName: user_name,
             isBuySellSuccessful: status,
             balance: base,
             market: market,
