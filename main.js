@@ -5,7 +5,12 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
-const { shouldSell, sellAdvice, getDescription } = require("./utils/mainUtils");
+const {
+  shouldSell,
+  sellAdvice,
+  getDescription,
+  pendingAsset,
+} = require("./utils/mainUtils");
 const Transactions = require("./db/transactions");
 const config = require("./constants/config");
 const Logs = require("./db/logs");
@@ -48,7 +53,9 @@ const run = async () => {
       currentPrice,
       name: user_name,
     });
-    const { pendingAsset } = await Transactions.getTransactions();
+    const { filteredTransactions } = await Transactions.getTransactions(
+      (item) => item.user_name === user_name
+    );
     const { market, asset, base } = await Account.getBalance(user_name);
     let status = "progress";
     if (bot.indicatorFunction) {
@@ -71,7 +78,7 @@ const run = async () => {
           asset,
           currentPrice,
           averageRate,
-          pendingAsset,
+          pendingAsset(filteredTransactions),
           indicatorResult
         )
       );
@@ -88,7 +95,6 @@ const run = async () => {
           amount: asset,
           market: market,
           averageBuyRate: averageRate,
-          pendingAsset: 0,
         });
         addLogsToTable(
           user_name,
@@ -103,7 +109,7 @@ const run = async () => {
             asset,
             currentPrice,
             averageRate,
-            pendingAsset,
+            pendingAsset(filteredTransactions),
             indicatorResult
           )
         );
@@ -119,7 +125,7 @@ const run = async () => {
                 amount: asset / 2,
                 market: market,
                 averageBuyRate: averageRate,
-                pendingAsset: pendingAsset + 1,
+                pendingAsset: pendingAsset(filteredTransactions),
               });
               addLogsToTable(
                 user_name,
@@ -134,7 +140,7 @@ const run = async () => {
                   asset,
                   currentPrice,
                   averageRate,
-                  pendingAsset,
+                  pendingAsset(filteredTransactions),
                   indicatorResult
                 )
               );
@@ -148,7 +154,6 @@ const run = async () => {
                 amount: asset,
                 market: market,
                 averageBuyRate: averageRate,
-                pendingAsset: 0,
               });
               addLogsToTable(
                 user_name,
@@ -163,7 +168,7 @@ const run = async () => {
                   asset,
                   currentPrice,
                   averageRate,
-                  pendingAsset,
+                  pendingAsset(filteredTransactions),
                   indicatorResult
                 )
               );
@@ -177,7 +182,6 @@ const run = async () => {
             balance: base,
             currentPrice,
           });
-
           if (quantity > 0) {
             await placeOrder({
               userName: user_name,

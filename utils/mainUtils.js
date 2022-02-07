@@ -89,10 +89,18 @@ const getDescription = (
   }
 };
 
+const pendingAsset = (array) => {
+  let index = array.length - 1;
+  for (let i = index; i >= 0; i--) {
+    if (array[i] === "buy") return index - i;
+  }
+};
+
 module.exports = {
   getCloseInputData,
   shouldSell,
   sellAdvice,
   getStochasticInputData,
   getDescription,
+  pendingAsset,
 };
