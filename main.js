@@ -5,7 +5,7 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
-
+var cors = require('cors');
 const cron = require("node-cron");
 const Logs = require("./db/logs");
 // DB related imports
@@ -13,8 +13,22 @@ const db = require("./db");
 // dotEnv.config();
 // const token = process.env.BOT_TOKEN;
 // const bot = new TelegramBot(token, { polling: true });
+const corsOpts = {
+  origin: '*',
+
+  methods: [
+    'GET',
+    'POST',
+  ],
+
+  allowedHeaders: [
+    'Content-Type',
+  ],
+};
 
 const app = express();
+app.use(cors(corsOpts));
+
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
@@ -171,6 +185,8 @@ const run = async () => {
 
 let cronTask;
 
+var routes=require('./usersApi/routes')
+routes(app)
 const main = async () => {
   await db.connect();
   run();
