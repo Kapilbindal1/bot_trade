@@ -76,5 +76,6 @@ const getAverageBotBuyRate = async (currentPrice, name) => {
 module.exports = {
   getBalance,
   getAverageBuyRate,
-  getAverageBotBuyRate
+  getAverageBotBuyRate,
+  getTradesHistory
 };

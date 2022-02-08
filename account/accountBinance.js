@@ -6,13 +6,16 @@ const { getClient } = require("../binance")
 
 const Average = require("./average");
 
-const getBalance = async (config = DefaultConfig) => {
+const getBalance = async () => {
   const client = getClient();
   try {
+    const config = DefaultConfig
     const { asset, base } = config;
     const balances = await client.fetchBalance();
     const assetBalance = balances.total[asset];
     const baseBalance = balances.total[base];
+
+    console.log("balances:", balances, config)
 
     const assetQuantity = {
       market: MarketUtils.getMarket(asset, base),
@@ -59,4 +62,5 @@ module.exports = {
   getAverageBuyRate,
   getBalance,
   getAverageBotBuyRate,
+  getTradesHistory
 };

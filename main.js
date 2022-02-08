@@ -53,10 +53,13 @@ const run = async () => {
       currentPrice,
       name: user_name,
     });
-    const { filteredTransactions } = await Transactions.getTransactions(
-      (item) => item.user_name === user_name
+    const trades = await Account.getTradesHistory(
+      {name: user_name}
     );
+    const filteredTransactions = trades
     const { market, asset, base } = await Account.getBalance(user_name);
+    console.log("filteredTransactions: ", filteredTransactions)
+    return;
     let status = "progress";
     if (bot.indicatorFunction) {
       let { advice, indicatorResult } = await bot.indicatorFunction({
