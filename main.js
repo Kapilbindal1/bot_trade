@@ -202,6 +202,7 @@ const run = async () => {
         currentPrice,
         quantity: asset,
       });
+      console.log("Sell Data: ", sellData);
 
       if (sellData.quantity > 0) {
         await placeOrder({
@@ -227,6 +228,7 @@ const run = async () => {
       }
 
       const buyData = await bot.buyFunction({ balance: base, currentPrice });
+      console.log("Buy Data: ", buyData);
       if (buyData.quantity > 0) {
         await placeOrder({
           userName: user_name,
