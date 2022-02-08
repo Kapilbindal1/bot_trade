@@ -15,7 +15,7 @@ const getBalance = async () => {
     const assetBalance = balances.total[asset];
     const baseBalance = balances.total[base];
 
-    console.log("balances:", balances, config)
+    // console.log("balances:", balances, config)
 
     const assetQuantity = {
       market: MarketUtils.getMarket(asset, base),

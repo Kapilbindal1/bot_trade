@@ -35,7 +35,7 @@ const buyCoin = async (
       rate
     );
 
-    console.log("buy order: ", order);
+    // console.log("buy order: ", order);
 
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
@@ -84,7 +84,7 @@ const sellCoin = async (
       rate
     );
 
-    console.log("sell order: ", order);
+    // console.log("sell order: ", order);
 
     const userData = await Users.getOrCreateUserByName(username);
     if (!!userData.user) {
