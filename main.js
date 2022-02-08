@@ -114,7 +114,7 @@ const run = async () => {
           )
         );
       } else if (advice === "buy") {
-        if (balance < config.minimumBuy) return;
+        if (base < config.minimumBuy) return;
         if (asset > 0) {
           switch (sellAdvice(averageRate, currentPrice, pendingAsset, asset)) {
             case "SELL_HALF": {

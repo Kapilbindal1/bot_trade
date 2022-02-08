@@ -1,12 +1,6 @@
-const { buy1, buy3 } = require("./market/buy");
+const { buy1, buy3, buy4, buy5 } = require("./market/buy");
 const { sell1 } = require("./market/sell");
 
-const bots = [
-  {
-    name: "testing_transactions_logs",
-    buyFunction: buy3.buy,
-    indicatorFunction: buy3.indicator,
-  },
-];
+const bots = [];
 
 module.exports = { bots };
