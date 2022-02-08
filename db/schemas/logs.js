@@ -11,6 +11,7 @@ const logsSchema = new schema({
   asset: { type: String, required: true },
   quantity: { type: Number, required: true },
   description: { type: String, required: false },
+  date: { type: Date, default: Date.now },
 });
 
 module.exports = Logs = mongoose.model("logs", logsSchema);
