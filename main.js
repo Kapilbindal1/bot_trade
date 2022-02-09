@@ -205,20 +205,25 @@ const run = async () => {
       console.log("Sell Data: ", {sellData, averageRate, currentPrice, asset});
 
       if (sellData.quantity > 0) {
-        await placeOrder({
-          userName: user_name,
-          side: "sell",
-          price: currentPrice,
-          amount: sellData.quantity,
-          market: market,
-          averageBuyRate: averageRate,
-        });
-        status = "success";
+        try {
+          await placeOrder({
+            userName: user_name,
+            side: "sell",
+            price: currentPrice,
+            amount: sellData.quantity,
+            market: market,
+            averageBuyRate: averageRate,
+          });
+          status = "success";
+        } catch (ex) {
+          status = "failure";
+        }
+        
         Logs.addLog({
           advice: "sell",
           currentPrice: currentPrice,
           userName: user_name,
-          isBuySellSuccessful: status,
+          isBuySellSuccessful: status === "success",
           balance: base,
           market: market,
           asset: asset,
@@ -230,19 +235,25 @@ const run = async () => {
       const buyData = await bot.buyFunction({ balance: base, currentPrice });
       console.log("Buy Data: ", {buyData, base, currentPrice});
       if (buyData.quantity > 0) {
-        await placeOrder({
-          userName: user_name,
-          side: "buy",
-          price: currentPrice,
-          amount: buyData.quantity,
-          market: market,
-        });
-        status = "success";
+        try {
+
+          await placeOrder({
+            userName: user_name,
+            side: "buy",
+            price: currentPrice,
+            amount: buyData.quantity,
+            market: market,
+          });
+          status = "success";
+        } catch(ex) {
+          status = "failure";
+          
+        }
         Logs.addLog({
           advice: "buy",
           currentPrice: currentPrice,
           userName: user_name,
-          isBuySellSuccessful: status,
+          isBuySellSuccessful: status === "success",
           balance: base,
           market: market,
           asset: asset,
