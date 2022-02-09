@@ -1,6 +1,7 @@
 const DefaultConfig = require("../../constants/config");
 const { getClient } = require("../../binance");
 const MarketUtils = require("../../utils/market");
+const { addLogger } = require("../../db/logger");
 
 const cancelPreviousOrders = async () => {
   try {
@@ -62,6 +63,7 @@ const buyCoin = async (
     return { success: false };
   } catch (err) {
     console.log("err: ", err);
+    addLogger({ userName: username, data: JSON.stringify(err) })
     return { success: false, err: err };
   }
 };
@@ -112,6 +114,8 @@ const sellCoin = async (
     }
     return { success: false };
   } catch (err) {
+    console.log("Err in sell coin: ", err);
+    addLogger({ userName: username, data: JSON.stringify(err) })
     return { success: false, err: err };
   }
 };
@@ -151,6 +155,7 @@ const placeOrder = async ({
     }
   } catch (err) {
     console.error("Error: ", err);
+    addLogger({ userName: username, data: JSON.stringify(err) })
     return null;
   }
 };
