@@ -40,7 +40,8 @@ const getHistoricalData = async (timeframe = "5m", config = DefaultConfig) => {
     myCache.set(key, newArr)
     return newArr;
   } catch (err) {
-    return console.error("Error: ", err);
+    console.error("Error: ", err);
+    return [];
   }
 };
 
