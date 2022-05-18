@@ -5,7 +5,7 @@ const baseConfig = {
   asset: process.env.ASSET,
   base: process.env.BASE,
   BOT_TRADING_TIMESTAMP: 1636341560708,
-  initialUserBalance: 34.4,
+  initialUserBalance: 500,
   minimumBuy: 10,
   buyLot: 10,
 };

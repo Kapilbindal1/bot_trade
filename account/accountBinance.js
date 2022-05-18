@@ -1,15 +1,14 @@
-
 const DefaultConfig = require("../constants/config");
 const CONSTANTS = require("../constants");
 const MarketUtils = require("../utils/market");
-const { getClient } = require("../binance")
+const { getClient } = require("../binance");
 
 const Average = require("./average");
 
 const getBalance = async () => {
   const client = getClient();
   try {
-    const config = DefaultConfig
+    const config = DefaultConfig;
     const { asset, base } = config;
     const balances = await client.fetchBalance();
     const assetBalance = balances.total[asset];
@@ -31,16 +30,18 @@ const getBalance = async () => {
   }
 };
 
-const getTradesHistory = ({ market, time } = {}) => {
+const getTradesHistory = ({ market, time, config } = {}) => {
+  const dConfig = config || DefaultConfig;
+
   return getClient().fetchMyTrades(
-    market ?? MarketUtils.getMarket(DefaultConfig.asset, DefaultConfig.base),
+    market ?? MarketUtils.getMarket(dConfig.asset, dConfig.base),
     time ?? new Date().getTime() - CONSTANTS.YEAR
   );
 };
 
-const getAverageBuyRate = async ({currentPrice, time}) => {
+const getAverageBuyRate = async ({ currentPrice, time, config }) => {
   try {
-    const trades = await getTradesHistory();
+    const trades = await getTradesHistory({ config });
     const averageRates = Average.getAverageRate(trades, currentPrice);
     return averageRates;
   } catch (ex) {

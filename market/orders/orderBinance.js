@@ -3,10 +3,10 @@ const { getClient } = require("../../binance");
 const MarketUtils = require("../../utils/market");
 const { addLogger } = require("../../db/logger");
 
-const cancelPreviousOrders = async () => {
+const cancelPreviousOrders = async (config = DefaultConfig) => {
   try {
     const binanceClient = getClient();
-    const { asset, base } = DefaultConfig;
+    const { asset, base } = config;
     const market = MarketUtils.getMarket(asset, base);
     const orders = await binanceClient.fetchOpenOrders(market);
 
@@ -127,10 +127,11 @@ const placeOrder = async ({
   amount,
   market,
   averageBuyRate,
-  pendingAsset
+  pendingAsset,
+  config
 }) => {
   try {
-    await cancelPreviousOrders();
+    await cancelPreviousOrders(config || DefaultConfig);
     if (side === "buy") {
       const newBuyTransaction = await buyCoin(
         amount,

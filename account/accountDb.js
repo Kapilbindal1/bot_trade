@@ -8,9 +8,9 @@ const MarketUtils = require("../utils/market");
 const Average = require("./average");
 
 
-const getBalance = async (name) => {
+const getBalance = async (name, config = DefaultConfig) => {
   try {
-    const { asset, base } = DefaultConfig;
+    const { asset, base } = config;
     const { user } = await UsersDb.getOrCreateUserByName(name);
     if (user) {
       const assetBalance = user.coinsCount;
@@ -30,11 +30,12 @@ const getBalance = async (name) => {
   }
 };
 
-const getTradesHistory = async ({ market, time, name } = {}) => {
+const getTradesHistory = async ({ market, time, name, config } = {}) => {
   try {
     const timeFrom = time ?? new Date().getTime() - CONSTANTS.YEAR;
+    const dConfig = config || DefaultConfig;
     const marketConsider =
-      market ?? MarketUtils.getMarket(DefaultConfig.asset, DefaultConfig.base);
+      market ?? MarketUtils.getMarket(dConfig.asset, dConfig.base);
     const data = await TransactionsDb.getTransactions({
       market: marketConsider,
       userName: name,
@@ -52,9 +53,9 @@ const getTradesHistory = async ({ market, time, name } = {}) => {
 };
 
 
-const getAverageBuyRate = async ({currentPrice, time, name}) => {
+const getAverageBuyRate = async ({currentPrice, time, name, config}) => {
   try {
-    const trades = await getTradesHistory({ name, time });
+    const trades = await getTradesHistory({ name, time, config });
     const averageRates = Average.getAverageRate(trades, currentPrice);
     return averageRates;
   } catch (ex) {

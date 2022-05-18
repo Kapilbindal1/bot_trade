@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const Account = require("./account");
 const Market = require("./market");
+const DefaultConfig = require("./constants/config");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
@@ -9,7 +10,7 @@ const {
   shouldSell,
   sellAdvice,
   getDescription,
-  pendingAsset,
+  pendingAsset
 } = require("./utils/mainUtils");
 const Transactions = require("./db/transactions");
 const config = require("./constants/config");
@@ -40,7 +41,7 @@ const addLogsToTable = (
     market: market,
     asset: asset,
     quantity: asset,
-    description: description,
+    description: description
   });
 };
 
@@ -48,24 +49,32 @@ const run = async () => {
   for (let i = 0; i < bots.length; i += 1) {
     const bot = bots[i];
     const user_name = bot.name;
-    const currentPrice = await Market.getCurrentPrice();
+    const currentPrice = await Market.getCurrentPrice({
+      ...DefaultConfig,
+      ...bot.config
+    });
     const { averageRate } = await Account.getAverageBuyRate({
       currentPrice,
       name: user_name,
+      config: {
+        ...DefaultConfig,
+        ...bot.config
+      }
     });
-    const { market, asset, base } = await Account.getBalance(user_name);
+    const { market, asset, base } = await Account.getBalance(user_name, {
+      ...DefaultConfig,
+      ...bot.config
+    });
     // return;
     let status = "progress";
     if (bot.indicatorFunction) {
-      const trades = await Account.getTradesHistory(
-        {name: user_name}
-      );
-      const filteredTransactions = trades
-      console.log("filteredTransactions: ", filteredTransactions)
+      const trades = await Account.getTradesHistory({ name: user_name, config: { ...DefaultConfig, ...bot.config } });
+      const filteredTransactions = trades;
+      console.log("filteredTransactions: ", filteredTransactions);
       let { advice, indicatorResult } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
-        asset,
+        asset
       });
 
       addLogsToTable(
@@ -98,6 +107,7 @@ const run = async () => {
           amount: asset,
           market: market,
           averageBuyRate: averageRate,
+          config: { ...DefaultConfig, ...bot.config }
         });
         addLogsToTable(
           user_name,
@@ -129,6 +139,7 @@ const run = async () => {
                 market: market,
                 averageBuyRate: averageRate,
                 pendingAsset: pendingAsset(filteredTransactions),
+                config: { ...DefaultConfig, ...bot.config }
               });
               addLogsToTable(
                 user_name,
@@ -157,6 +168,7 @@ const run = async () => {
                 amount: asset,
                 market: market,
                 averageBuyRate: averageRate,
+                config: { ...DefaultConfig, ...bot.config }
               });
               addLogsToTable(
                 user_name,
@@ -183,7 +195,7 @@ const run = async () => {
         } else {
           const { quantity } = await bot.buyFunction({
             balance: base,
-            currentPrice,
+            currentPrice
           });
           if (quantity > 0) {
             await placeOrder({
@@ -192,6 +204,7 @@ const run = async () => {
               price: currentPrice,
               amount: quantity,
               market: market,
+              config: { ...DefaultConfig, ...bot.config }
             });
           }
         }
@@ -200,9 +213,14 @@ const run = async () => {
       let sellData = bot.sellFunction({
         averageBuyRate: averageRate,
         currentPrice,
-        quantity: asset,
+        quantity: asset
       });
-      console.log("Sell Data: ", {sellData, averageRate, currentPrice, asset});
+      console.log("Sell Data: ", {
+        sellData,
+        averageRate,
+        currentPrice,
+        asset
+      });
 
       if (sellData.quantity > 0) {
         try {
@@ -213,12 +231,13 @@ const run = async () => {
             amount: sellData.quantity,
             market: market,
             averageBuyRate: averageRate,
+            config: { ...DefaultConfig, ...bot.config }
           });
           status = "success";
         } catch (ex) {
           status = "failure";
         }
-        
+
         Logs.addLog({
           advice: "sell",
           currentPrice: currentPrice,
@@ -227,27 +246,26 @@ const run = async () => {
           balance: base,
           market: market,
           asset: asset,
-          quantity: sellData.quantity,
+          quantity: sellData.quantity
         });
         return;
       }
 
       const buyData = await bot.buyFunction({ balance: base, currentPrice });
-      console.log("Buy Data: ", {buyData, base, currentPrice});
+      console.log("Buy Data: ", { buyData, base, currentPrice });
       if (buyData.quantity > 0) {
         try {
-
           await placeOrder({
             userName: user_name,
             side: "buy",
             price: currentPrice,
             amount: buyData.quantity,
             market: market,
+            config: { ...DefaultConfig, ...bot.config }
           });
           status = "success";
-        } catch(ex) {
+        } catch (ex) {
           status = "failure";
-          
         }
         Logs.addLog({
           advice: "buy",
@@ -257,7 +275,7 @@ const run = async () => {
           balance: base,
           market: market,
           asset: asset,
-          quantity: buyData.quantity,
+          quantity: buyData.quantity
         });
       }
     }
@@ -277,6 +295,6 @@ const main = async () => {
 const port = process.env.PORT || 8000;
 app.listen(port, function () {
   console.log("App listening at: ", port);
-  // main();
+  main();
   keepAlive();
 });
