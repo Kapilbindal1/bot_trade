@@ -18,12 +18,32 @@ const buy = async ({ balance, currentPrice }) => {
   const adviceRSI = RSI.getAdvice(RSI_result_5m);
   const adviceMACD = MACD.getAdvice(MACD_result_5m);
 
-  if (
-    adviceMACD.advice === "buy" &&
-    (adviceRSI.advice === "buy" || adviceRSI.advice === "hold")
+  let buyRatio = 0;
+
+if (
+    adviceMACD.advice === "buy"
   ) {
-    const amountForBuy = balance < 2 * config.buyLot ? balance : config.buyLot;
-    const quantityToBuy = amountForBuy / currentPrice;
+    if (adviceRSI.advice === "buy") {
+      buyRatio = 2;
+    } else if (adviceRSI.advice === "hold") {
+      buyRatio = 1;
+    }
+  }
+
+
+  if (
+    buyRatio > 0
+  ) {
+    let amountOfBuy = 0;
+    const amountShouldBuy = buyRatio * config.buyLot;
+    if (balance <= amountShouldBuy) {
+      amountOfBuy = balance;
+    } else if ((balance - amountShouldBuy) < config.buyLot) {
+      amountOfBuy = balance;
+    } else {
+      amountOfBuy = amountShouldBuy
+    }
+    const quantityToBuy = amountOfBuy / currentPrice;
     return { quantity: quantityToBuy };
   }
   return { quantity: 0 };
