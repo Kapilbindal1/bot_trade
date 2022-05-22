@@ -26,8 +26,6 @@ const getAdvice = (macdResult) => {
     macdResult[i - 1].MACD >= macdResult[i - 1].signal
   ) {
     advice = "sell";
-  } else {
-    advice = "hold";
   }
 
   adviceArray.push(advice);
