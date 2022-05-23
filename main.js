@@ -61,7 +61,7 @@ const run = async () => {
         ...bot.config
       }
     });
-    console.log("averageRate: ", averageRate);
+    // console.log("averageRate: ", averageRate);
 
 
     const { market, asset, base } = await Account.getBalance(user_name, {
@@ -73,7 +73,7 @@ const run = async () => {
     if (bot.indicatorFunction) {
       const trades = await Account.getTradesHistory({ name: user_name, config: { ...DefaultConfig, ...bot.config } });
       const filteredTransactions = trades;
-      console.log("filteredTransactions: ", filteredTransactions);
+      // console.log("filteredTransactions: ", filteredTransactions);
       let { advice, indicatorResult } = await bot.indicatorFunction({
         balance: base,
         currentPrice,
