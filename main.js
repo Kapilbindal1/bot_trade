@@ -61,6 +61,9 @@ const run = async () => {
         ...bot.config
       }
     });
+    console.log("averageRate: ", averageRate);
+
+
     const { market, asset, base } = await Account.getBalance(user_name, {
       ...DefaultConfig,
       ...bot.config
