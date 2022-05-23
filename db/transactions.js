@@ -28,9 +28,9 @@ const addTransaction = async (req) => {
 
 const getTransactions = async (query) => {
   try {
-    const transactions = await Transactions.find({});
-    const filteredTransactions = transactions.filter(query);
-    return { success: true, filteredTransactions };
+    const transactions = await Transactions.find(query);
+    // const filteredTransactions = transactions.filter(query);
+    return { success: true, transactions };
   } catch (err) {
     return { success: false, error: err };
   }
