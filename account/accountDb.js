@@ -44,7 +44,7 @@ const getTradesHistory = async ({ market, time, name, config } = {}) => {
       }
     });
 
-    // console.log("data", data, new Date(timeFrom), marketConsider);
+    console.log("data", data, new Date(timeFrom), marketConsider);
     return data.transactions || []
 
   } catch (ex) {
