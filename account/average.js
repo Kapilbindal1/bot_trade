@@ -59,7 +59,8 @@ const getAverageRate = (trades, currentPrice) => {
     averageSellRate: averageSellRate.value(),
     sellCount: sellCount.value(),
     averageRate: averageRate.value(),
-    balanceCount: balanceCount.value()
+    balanceCount: balanceCount.value(),
+    trades
   };
 };
 

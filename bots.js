@@ -19,6 +19,24 @@ const bots = [
     buyFunction: buy1.buy,
     sellFunction: sell1.sell,
     config: { asset: "ETH", base: "USDT" }
+  },
+  {
+    name: "matic_usdt_30m",
+    buyFunction: buy1.buy_30m,
+    sellFunction: sell1.sell,
+    config: { asset: "MATIC", base: "USDT" }
+  },
+  {
+    name: "ens_usdt_30m",
+    buyFunction: buy1.buy_30m,
+    sellFunction: sell1.sell,
+    config: { asset: "ENS", base: "USDT" }
+  },
+  {
+    name: "eth_usdt_30m",
+    buyFunction: buy1.buy_30m,
+    sellFunction: sell1.sell,
+    config: { asset: "ETH", base: "USDT" }
   }
 ];
 

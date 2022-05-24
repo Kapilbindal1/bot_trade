@@ -49,4 +49,48 @@ if (
   return { quantity: 0 };
 };
 
-module.exports = { buy };
+
+
+const buy_30m = async ({ balance, currentPrice }) => {
+  if (balance < config.minimumBuy)
+    return { quantity: 0, message: "less than minimum balance" };
+  let historicalData = await Market.getHistoricalData("30m");
+  let indicatorInputData = MainUtils.getCloseInputData(historicalData);
+
+  let RSI_result = RSI.calculateRSIValue(indicatorInputData);
+  let MACD_result = MACD.calculateMACDValue(indicatorInputData);
+  const adviceRSI = RSI.getAdvice(RSI_result);
+  const adviceMACD = MACD.getAdvice(MACD_result);
+
+  let buyRatio = 0;
+
+if (
+    adviceMACD.advice === "buy"
+  ) {
+    if (adviceRSI.advice === "buy") {
+      buyRatio = 2;
+    } else if (adviceRSI.advice === "hold") {
+      buyRatio = 1;
+    }
+  }
+
+
+  if (
+    buyRatio > 0
+  ) {
+    let amountOfBuy = 0;
+    const amountShouldBuy = buyRatio * config.buyLot;
+    if (balance <= amountShouldBuy) {
+      amountOfBuy = balance;
+    } else if ((balance - amountShouldBuy) < config.buyLot) {
+      amountOfBuy = balance;
+    } else {
+      amountOfBuy = amountShouldBuy
+    }
+    const quantityToBuy = amountOfBuy / currentPrice;
+    return { quantity: quantityToBuy };
+  }
+  return { quantity: 0 };
+};
+
+module.exports = { buy, buy_30m };
