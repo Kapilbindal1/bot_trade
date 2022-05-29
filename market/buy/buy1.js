@@ -20,9 +20,7 @@ const buy = async ({ balance, currentPrice }) => {
 
   let buyRatio = 0;
 
-if (
-    adviceMACD.advice === "buy"
-  ) {
+  if (adviceMACD.advice === "buy") {
     if (adviceRSI.advice === "buy") {
       buyRatio = 2;
     } else if (adviceRSI.advice === "hold") {
@@ -30,26 +28,21 @@ if (
     }
   }
 
-
-  if (
-    buyRatio > 0
-  ) {
+  if (buyRatio > 0) {
     let amountOfBuy = 0;
     const amountShouldBuy = buyRatio * config.buyLot;
     if (balance <= amountShouldBuy) {
       amountOfBuy = balance;
-    } else if ((balance - amountShouldBuy) < config.buyLot) {
+    } else if (balance - amountShouldBuy < config.buyLot) {
       amountOfBuy = balance;
     } else {
-      amountOfBuy = amountShouldBuy
+      amountOfBuy = amountShouldBuy;
     }
     const quantityToBuy = amountOfBuy / currentPrice;
     return { quantity: quantityToBuy };
   }
   return { quantity: 0 };
 };
-
-
 
 const buy_30m = async ({ balance, currentPrice }) => {
   if (balance < config.minimumBuy)
@@ -64,9 +57,7 @@ const buy_30m = async ({ balance, currentPrice }) => {
 
   let buyRatio = 0;
 
-if (
-    adviceMACD.advice === "buy"
-  ) {
+  if (adviceMACD.advice === "buy") {
     if (adviceRSI.advice === "buy") {
       buyRatio = 2;
     } else if (adviceRSI.advice === "hold") {
@@ -74,18 +65,15 @@ if (
     }
   }
 
-
-  if (
-    buyRatio > 0
-  ) {
+  if (buyRatio > 0) {
     let amountOfBuy = 0;
     const amountShouldBuy = buyRatio * config.buyLot;
     if (balance <= amountShouldBuy) {
       amountOfBuy = balance;
-    } else if ((balance - amountShouldBuy) < config.buyLot) {
+    } else if (balance - amountShouldBuy < config.buyLot) {
       amountOfBuy = balance;
     } else {
-      amountOfBuy = amountShouldBuy
+      amountOfBuy = amountShouldBuy;
     }
     const quantityToBuy = amountOfBuy / currentPrice;
     return { quantity: quantityToBuy };
@@ -93,4 +81,43 @@ if (
   return { quantity: 0 };
 };
 
-module.exports = { buy, buy_30m };
+
+const buy_InstantDown = async ({ balance, currentPrice }) => {
+  if (balance < config.minimumBuy)
+    return { quantity: 0, message: "less than minimum balance" };
+  let historicalData = await Market.getHistoricalData("30m");
+  let indicatorInputData = MainUtils.getCloseInputData(historicalData);
+
+  const lastClosedPrice = indicatorInputData[indicatorInputData.length - 2];
+
+  if (lastClosedPrice * 0.9 > currentPrice) {
+    let buyRatio = 1;
+
+    if (lastClosedPrice * 0.7 > currentPrice) {
+      buyRatio = 2;
+    }
+  
+    if (buyRatio > 0) {
+      let amountOfBuy = 0;
+      const amountShouldBuy = buyRatio * config.buyLot;
+      if (balance <= amountShouldBuy) {
+        amountOfBuy = balance;
+      } else if (balance - amountShouldBuy < config.buyLot) {
+        amountOfBuy = balance;
+      } else {
+        amountOfBuy = amountShouldBuy;
+      }
+      const quantityToBuy = amountOfBuy / currentPrice;
+      return { quantity: quantityToBuy };
+    }
+  }
+ 
+  return { quantity: 0 };
+};
+
+
+
+
+
+
+module.exports = { buy, buy_30m, buy_InstantDown };
