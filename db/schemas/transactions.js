@@ -9,7 +9,7 @@ const transactionsSchema = new schema({
   info: { type: Boolean, required: true, default: true },
   date: { type: Date, default: Date.now },
   market: { type: String, required: true },
-  averageBuyRate: { type: Number },
+  averageBuyRate: { type: Number }
 });
 
 module.exports = Entry = mongoose.model("transactions", transactionsSchema);

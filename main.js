@@ -249,7 +249,8 @@ const run = async () => {
           balance: base,
           market: market,
           asset: asset,
-          quantity: sellData.quantity
+          quantity: sellData.quantity,
+          additionalData: JSON.stringify(sellData)
         });
         return;
       }
@@ -278,7 +279,8 @@ const run = async () => {
           balance: base,
           market: market,
           asset: asset,
-          quantity: buyData.quantity
+          quantity: buyData.quantity,
+          additionalData: JSON.stringify(buyData)
         });
       }
     }

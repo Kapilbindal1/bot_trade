@@ -108,7 +108,7 @@ const buy_InstantDown = async ({ balance, currentPrice }) => {
         amountOfBuy = amountShouldBuy;
       }
       const quantityToBuy = amountOfBuy / currentPrice;
-      return { quantity: quantityToBuy };
+      return { quantity: quantityToBuy, lastClosedPrice, currentPrice };
     }
   }
  

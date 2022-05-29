@@ -12,6 +12,7 @@ const logsSchema = new schema({
   quantity: { type: Number, required: true },
   description: { type: String, required: false },
   date: { type: Date, default: Date.now },
+  additionalData: { type: String },
 });
 
 module.exports = Logs = mongoose.model("logs", logsSchema);

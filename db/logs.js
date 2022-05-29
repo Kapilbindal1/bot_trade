@@ -11,6 +11,7 @@ const addLog = (data) => {
     asset,
     quantity,
     description,
+    additionalData
   } = data;
 
   if (!advice || !currentPrice || !userName || !balance || !market) {
@@ -26,6 +27,7 @@ const addLog = (data) => {
     asset,
     quantity,
     description,
+    additionalData
   });
 
   try {
