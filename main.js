@@ -255,7 +255,7 @@ const run = async () => {
         return;
       }
 
-      const buyData = await bot.buyFunction({ balance: base, currentPrice });
+      const buyData = await bot.buyFunction({ balance: base, currentPrice, config: { ...DefaultConfig, ...bot.config } });
       console.log("Buy Data: ", { buyData, base, currentPrice });
       if (buyData.quantity > 0) {
         try {

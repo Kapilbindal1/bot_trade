@@ -5,12 +5,12 @@
 const Market = require("../index");
 const MainUtils = require("../../utils/mainUtils");
 const { RSI, MACD } = require("../indicators");
-const config = require("../../constants/config");
+const DefaultConfig = require("../../constants/config");
 
-const buy = async ({ balance, currentPrice }) => {
+const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
   if (balance < config.minimumBuy)
     return { quantity: 0, message: "less than minimum balance" };
-  let historicalData_5m = await Market.getHistoricalData();
+  let historicalData_5m = await Market.getHistoricalData({ config });
   let indicatorInputData_5m = MainUtils.getCloseInputData(historicalData_5m);
 
   let RSI_result_5m = RSI.calculateRSIValue(indicatorInputData_5m);
@@ -44,10 +44,10 @@ const buy = async ({ balance, currentPrice }) => {
   return { quantity: 0 };
 };
 
-const buy_30m = async ({ balance, currentPrice }) => {
+const buy_30m = async ({ balance, currentPrice, config = DefaultConfig }) => {
   if (balance < config.minimumBuy)
     return { quantity: 0, message: "less than minimum balance" };
-  let historicalData = await Market.getHistoricalData("30m");
+  let historicalData = await Market.getHistoricalData({timeframe:"30m", config});
   let indicatorInputData = MainUtils.getCloseInputData(historicalData);
 
   let RSI_result = RSI.calculateRSIValue(indicatorInputData);
@@ -82,10 +82,10 @@ const buy_30m = async ({ balance, currentPrice }) => {
 };
 
 
-const buy_InstantDown = async ({ balance, currentPrice }) => {
+const buy_InstantDown = async ({ balance, currentPrice, config = DefaultConfig }) => {
   if (balance < config.minimumBuy)
     return { quantity: 0, message: "less than minimum balance" };
-  let historicalData = await Market.getHistoricalData("30m");
+  let historicalData = await Market.getHistoricalData({timeframe:"30m", config});
   let indicatorInputData = MainUtils.getCloseInputData(historicalData);
 
   const lastClosedPrice = indicatorInputData[indicatorInputData.length - 2];

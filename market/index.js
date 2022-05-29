@@ -22,7 +22,7 @@ const getCurrentPrice = async (config = DefaultConfig) => {
   }
 };
 
-const getHistoricalData = async (timeframe = "5m", config = DefaultConfig) => {
+const getHistoricalData = async ({timeframe = "5m", config = DefaultConfig}) => {
   const market = MarketUtils.getMarket(config.asset, config.base)
   const key = `${market}_${timeframe}`;
   if (myCache.get(key)) {
