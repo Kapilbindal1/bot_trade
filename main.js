@@ -225,6 +225,17 @@ const run = async () => {
         asset
       });
 
+      Logs.addLog({
+        advice: "should sell",
+        currentPrice: currentPrice,
+        userName: user_name,
+        balance: base,
+        market: market,
+        asset: asset,
+        quantity: sellData.quantity,
+        additionalData: JSON.stringify(sellData)
+      });
+
       if (sellData.quantity > 0) {
         try {
           await placeOrder({
@@ -257,6 +268,16 @@ const run = async () => {
 
       const buyData = await bot.buyFunction({ balance: base, currentPrice, config: { ...DefaultConfig, ...bot.config } });
       console.log("Buy Data: ", { buyData, base, currentPrice });
+      Logs.addLog({
+        advice: "should buy",
+        currentPrice: currentPrice,
+        userName: user_name,
+        balance: base,
+        market: market,
+        asset: asset,
+        quantity: sellData.quantity,
+        additionalData: JSON.stringify(sellData)
+      });
       if (buyData.quantity > 0) {
         try {
           await placeOrder({
