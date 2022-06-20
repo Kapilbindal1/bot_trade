@@ -11,6 +11,8 @@ module.exports = function (app) {
   // todoList Routes
   app.get("/bots", bots.getBots);
   app.get("/technicalIndicators", technicalIndicators.getTechnicalIndicators);
+  app.get("/technicalIndicators/markets", technicalIndicators.getMarketCurrencies);
+  app.get("/technicalIndicators/prices", technicalIndicators.getMarketPrices);
   app.get("/getTransactionsByUser/:user", users.getUserTransactionsByUsername);
   app.get("/logs", users.getLogs);
   app.post("/addLog", users.addLog);
