@@ -1,6 +1,7 @@
 "use strict";
 
 var TechnicalIndicators = require("../db/schemas/technical_Indicators");
+const ccxt = require('ccxt')
 
 exports.getTechnicalIndicators = async (req, res) => {
   try {
