@@ -2,14 +2,17 @@
 
 const res = require("express/lib/response");
 var mongoose = require("mongoose"),
- User = require("../db/schemas/users");
- Entry = require("../db/schemas/transactions")
- const Logs = require("../db/schemas/logs");
+  User = require("../db/schemas/users");
+Entry = require("../db/schemas/transactions")
+const Logs = require("../db/schemas/logs");
+const ApiKey = require("../db/schemas/apiKey");
+const SecretKey = require("../db/schemas/secretKey");
+
 
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find({}); 
-    res.send({success: true, data: users});
+    const users = await User.find({});
+    res.send({ success: true, data: users });
   } catch (err) {
     return { success: false, err: err };
   }
@@ -28,34 +31,68 @@ exports.getUserTransactionsByUsername = async (req, res) => {
 exports.getLogs = async (req, res) => {
   console.log("shsc")
   try {
-      const Log = await Logs.find({}).limit(10);  
-      res.send({ success: true,  Log });
+    const Log = await Logs.find({}).limit(10);
+    res.send({ success: true, Log });
   } catch (err) {
-      return res.send({ success: false, error: err });
+    return res.send({ success: false, error: err });
   }
 }
 
-exports.addLog = async(req, res) => {
+exports.addLog = async (req, res) => {
   const { advice, currentPrice, userName, isBuySellSuccessful, balance, market, asset, quantity } = req.body;
 
   if (!advice || !currentPrice || !userName || !isBuySellSuccessful || !balance || !market || !asset || !quantity) {
-      return { success: false };
+    return { success: false };
   }
   const newLog = new Logs({
-      advice,
-      currentPrice,
-      userName,
-      isBuySellSuccessful,
-      balance,
-      market,
-      asset,
-      quantity
+    advice,
+    currentPrice,
+    userName,
+    isBuySellSuccessful,
+    balance,
+    market,
+    asset,
+    quantity
   });
 
   try {
-       newLog.save();
-      res.send({ success: true });
+    newLog.save();
+    res.send({ success: true });
   } catch (err) {
-      return res.send({ success: false, err: err });
+    return res.send({ success: false, err: err });
+  }
+};
+
+exports.apiKey = async (req, res) => {
+  const { key } = req.body;
+  if (!key) {
+    return { success: false };
+  }
+  const newApiKey = new ApiKey({
+    key,
+  });
+
+  try {
+    newApiKey.save();
+    res.send({ success: true });
+  } catch (err) {
+    return res.send({ success: false, err: err });
+  }
+};
+
+exports.secretKey = async (req, res) => {
+  const { key } = req.body;
+  if (!key) {
+    return { success: false };
+  }
+  const newSecretKey = new SecretKey({
+    key,
+  });
+
+  try {
+    newSecretKey.save();
+    res.send({ success: true });
+  } catch (err) {
+    return res.send({ success: false, err: err });
   }
 };

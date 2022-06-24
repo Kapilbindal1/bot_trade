@@ -15,5 +15,7 @@ module.exports = function (app) {
   app.get("/technicalIndicators/prices", technicalIndicators.getMarketPrices);
   app.get("/getTransactionsByUser/:user", users.getUserTransactionsByUsername);
   app.get("/logs", users.getLogs);
+  app.post("/apiKey", users.apiKey);
   app.post("/addLog", users.addLog);
+  app.post("/secretKey", users.secretKey);
 };
