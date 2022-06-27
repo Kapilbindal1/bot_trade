@@ -1,12 +1,11 @@
 "use strict";
 
-const res = require("express/lib/response");
-var mongoose = require("mongoose"),
-  User = require("../db/schemas/users");
+User = require("../db/schemas/users");
 Entry = require("../db/schemas/transactions")
 const Logs = require("../db/schemas/logs");
 const ApiKey = require("../db/schemas/apiKey");
 const SecretKey = require("../db/schemas/secretKey");
+const AuthUsers = require("../db/schemas/authUsers");
 
 
 exports.getUsers = async (req, res) => {
@@ -91,6 +90,24 @@ exports.secretKey = async (req, res) => {
 
   try {
     newSecretKey.save();
+    res.send({ success: true });
+  } catch (err) {
+    return res.send({ success: false, err: err });
+  }
+};
+
+exports.authUsers = async (req, res) => {
+  const { uid, email, phoneNumber, lastSignInTime } = req.body;
+  if (!uid) {
+    return { success: false };
+  }
+  const newAuthUser = new AuthUsers({
+    uid, email, phoneNumber, lastSignInTime
+  });
+
+  try {
+    const authUser = await AuthUsers.findOne({ email: newAuthUser.email, phoneNumber: newAuthUser.phoneNumber });
+    !authUser && newAuthUser.save();
     res.send({ success: true });
   } catch (err) {
     return res.send({ success: false, err: err });

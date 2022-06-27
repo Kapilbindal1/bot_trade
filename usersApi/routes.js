@@ -18,4 +18,5 @@ module.exports = function (app) {
   app.post("/apiKey", users.apiKey);
   app.post("/addLog", users.addLog);
   app.post("/secretKey", users.secretKey);
+  app.post("/authusers", users.authUsers);
 };
