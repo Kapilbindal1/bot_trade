@@ -16,4 +16,5 @@ module.exports = function (app) {
   app.get("/logs", users.getLogs);
   app.post("/addLog", users.addLog);
   app.post("/binanceBotUsers", users.binanceBotUsers);
+  app.get("/getBinanceBotUsers", users.getBinanceBotUsers);
 };

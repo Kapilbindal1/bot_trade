@@ -76,3 +76,13 @@ exports.binanceBotUsers = async (req, res) => {
     return res.send({ success: false, err: err });
   }
 };
+
+exports.getBinanceBotUsers = async (req, res) => {
+  try {
+    const binanceBotUsers = await BinanceBotUsers.find({});
+    console.log(binanceBotUsers, "binanceBotUsers1234");
+    res.send({ success: true, data: binanceBotUsers });
+  } catch (err) {
+    return { success: false, err: err };
+  }
+};
