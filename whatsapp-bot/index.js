@@ -43,6 +43,7 @@ const responseBot = async (app) => {
 
     // Listen to ALL incoming messages
     bot.on("message", async (msg) => {
+      console.log(msg, "msgmsg");
       await bot.sendText(msg.from, `Hello ${msg.name}`);
       //   let userExist = await getResponseData(msg.from);
       //   try {
