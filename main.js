@@ -46,6 +46,8 @@ const addLogsToTable = (
 };
 
 const run = async () => {
+  const botsArray = bots || [];
+  console.log("bots====>", bots)
   for (let i = 0; i < bots.length; i += 1) {
     const bot = bots[i];
     const user_name = bot.name;
