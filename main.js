@@ -62,7 +62,7 @@ const run = async () => {
         quantity: 0
       })
       // console.log(user_name, " Advice: ", advice, currentPrice);
-      console.log("data===>", {
+      console.log("data123===>", {
         user_name,
         currentPrice,
         averageRate,
