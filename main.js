@@ -5,25 +5,22 @@ const Market = require("./market");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
-var cors = require('cors');
+var cors = require("cors");
 const cron = require("node-cron");
 const Logs = require("./db/logs");
+const responseBot = require("./whatsapp-bot/index");
+
 // DB related imports
 const db = require("./db");
 // dotEnv.config();
 // const token = process.env.BOT_TOKEN;
 // const bot = new TelegramBot(token, { polling: true });
 const corsOpts = {
-  origin: '*',
+  origin: "*",
 
-  methods: [
-    'GET',
-    'POST',
-  ],
+  methods: ["GET", "POST"],
 
-  allowedHeaders: [
-    'Content-Type',
-  ],
+  allowedHeaders: ["Content-Type"],
 };
 
 const app = express();
@@ -59,8 +56,8 @@ const run = async () => {
         balance: base,
         market: market,
         asset: asset,
-        quantity: 0
-      })
+        quantity: 0,
+      });
       // console.log(user_name, " Advice: ", advice, currentPrice);
       console.log("data===>", {
         user_name,
@@ -82,15 +79,15 @@ const run = async () => {
         });
         status = "success";
         Logs.addLog({
-            advice: advice,
-            currentPrice: currentPrice,
-            userName: user_name,
-            isBuySellSuccessful: status,
-            balance: base,
-            market: market,
-            asset: asset,
-            quantity: asset
-          })
+          advice: advice,
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: asset,
+        });
       } else if (advice === "buy") {
         const { quantity } = await bot.buyFunction({
           balance: base,
@@ -123,8 +120,8 @@ const run = async () => {
             balance: base,
             market: market,
             asset: asset,
-            quantity: quantity
-          })
+            quantity: quantity,
+          });
         }
       } else return;
     } else {
@@ -145,15 +142,15 @@ const run = async () => {
         });
         status = "success";
         Logs.addLog({
-            advice: "sell",
-            currentPrice: currentPrice,
-            userName: user_name,
-            isBuySellSuccessful: status,
-            balance: base,
-            market: market,
-            asset: asset,
-            quantity: sellData.quantity
-          })
+          advice: "sell",
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: sellData.quantity,
+        });
         return;
       }
 
@@ -169,15 +166,15 @@ const run = async () => {
         });
         status = "success";
         Logs.addLog({
-            advice: "buy",
-            currentPrice: currentPrice,
-            userName: user_name,
-            isBuySellSuccessful: status,
-            balance: base,
-            market: market,
-            asset: asset,
-            quantity: buyData.quantity
-          })
+          advice: "buy",
+          currentPrice: currentPrice,
+          userName: user_name,
+          isBuySellSuccessful: status,
+          balance: base,
+          market: market,
+          asset: asset,
+          quantity: buyData.quantity,
+        });
       }
     }
   }
@@ -185,8 +182,9 @@ const run = async () => {
 
 let cronTask;
 
-var routes=require('./usersApi/routes')
-routes(app)
+var routes = require("./usersApi/routes");
+routes(app);
+responseBot(app);
 const main = async () => {
   await db.connect();
   run();
