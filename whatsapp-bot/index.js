@@ -32,8 +32,8 @@ const responseBot = async (app) => {
       try {
         if (!userExist) {
           const tradingBots = await axios.get(process.env.APP_URL + "/bots");
-          console.log(tradingBots);
-          await bot.sendList(msg.from, "Select", "Hi, Welcome to trading bot app. Please select a bot", generateText("list", tradingBots));
+          console.log(tradingBots.data, "tradingBotsData");
+          await bot.sendList(msg.from, "Select", "Hi, Welcome to trading bot app. Please select a bot", generateText("list", tradingBots.data));
         } else {
         }
         // else {
