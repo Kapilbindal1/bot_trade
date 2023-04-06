@@ -28,6 +28,7 @@ const responseBot = async (app) => {
     await bot.startExpressServer({
       app,
       webhookVerifyToken,
+      port: 4000,
     });
 
     // Set up privacy policy route
