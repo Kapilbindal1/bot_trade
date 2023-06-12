@@ -114,7 +114,10 @@ let cronTask;
 const main = async () => {
   await db.connect();
   run();
-  cron.schedule("* * * * *", () => {
+  if (cronTask) {
+    cronTask.stop()
+  }
+  cronTask = cron.schedule("*/2 * * * *", () => {
     run();
   });
 };
