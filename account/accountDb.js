@@ -35,7 +35,7 @@ const getTradesHistory = async ({ market, time, name, config } = {}) => {
     const timeFrom = time ?? new Date().getTime() - CONSTANTS.YEAR;
     const dConfig = config || DefaultConfig;
     const marketConsider =
-      market ?? MarketUtils.getMarket(dConfig.asset, dConfig.base);
+      market ?? dConfig.market;
     const data = await TransactionsDb.getTransactions({
       market: marketConsider,
       userName: name,

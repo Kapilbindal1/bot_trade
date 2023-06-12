@@ -6,8 +6,9 @@ const myCache = new NodeCache( { stdTTL: 50, checkperiod: 60 } );
 
 const getCurrentPrice = async (config = DefaultConfig) => {
   try {
+    console.log("config.market: ", config.market);
     let orderbook = await getClient().fetchOrderBook(
-      MarketUtils.getMarket(config.asset, config.base),
+      config.market,
       2
     );
     let currentPrice =

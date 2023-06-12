@@ -17,7 +17,8 @@ const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
   let MACD_result_5m = MACD.calculateMACDValue(indicatorInputData_5m);
   const adviceRSI = RSI.getAdvice(RSI_result_5m);
   const adviceMACD = MACD.getAdvice(MACD_result_5m);
-
+  console.log("Advice RSI: ", adviceRSI)
+  console.log("Advice MACD: ", adviceMACD)
   let buyRatio = 0;
 
   if (adviceMACD.advice === "buy") {

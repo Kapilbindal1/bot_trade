@@ -22,30 +22,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(bodyParser.json({ limit: "50mb" }));
 
-const addLogsToTable = (
-  user_name,
-  advice,
-  currentPrice,
-  status,
-  base,
-  market,
-  asset,
-  description
-) => {
-  Logs.addLog({
-    userName: user_name,
-    advice: advice,
-    currentPrice: currentPrice,
-    isBuySellSuccessful: status,
-    balance: base,
-    market: market,
-    asset: asset,
-    quantity: asset,
-    description: description
-  });
-};
-
 const run = async () => {
+  console.log("************ RUN ***************")
   for (let i = 0; i < bots.length; i += 1) {
     const bot = bots[i];
     const user_name = bot.name;
@@ -61,8 +39,9 @@ const run = async () => {
         ...bot.config
       }
     });
-    // console.log("averageRate: ", averageRate);
 
+    
+    console.log("averageRate: ", averageRate);
 
     const { market, asset, base } = await Account.getBalance(user_name, {
       ...DefaultConfig,
@@ -70,149 +49,7 @@ const run = async () => {
     });
     // return;
     let status = "progress";
-    if (bot.indicatorFunction) {
-      const trades = await Account.getTradesHistory({ name: user_name, config: { ...DefaultConfig, ...bot.config } });
-      const filteredTransactions = trades;
-      // console.log("filteredTransactions: ", filteredTransactions);
-      let { advice, indicatorResult } = await bot.indicatorFunction({
-        balance: base,
-        currentPrice,
-        asset
-      });
-
-      addLogsToTable(
-        user_name,
-        advice,
-        currentPrice,
-        false,
-        base,
-        market,
-        asset,
-        getDescription(
-          advice,
-          asset,
-          currentPrice,
-          averageRate,
-          pendingAsset(filteredTransactions),
-          indicatorResult
-        )
-      );
-
-      if (
-        advice === "sell" &&
-        asset > 0 &&
-        shouldSell(currentPrice, averageRate)
-      ) {
-        await placeOrder({
-          userName: user_name,
-          side: "sell",
-          price: currentPrice,
-          amount: asset,
-          market: market,
-          averageBuyRate: averageRate,
-          config: { ...DefaultConfig, ...bot.config }
-        });
-        addLogsToTable(
-          user_name,
-          advice,
-          currentPrice,
-          true,
-          base,
-          market,
-          asset,
-          getDescription(
-            advice,
-            asset,
-            currentPrice,
-            averageRate,
-            pendingAsset(filteredTransactions),
-            indicatorResult
-          )
-        );
-      } else if (advice === "buy") {
-        if (balance < config.minimumBuy) return;
-        if (asset > 0) {
-          switch (sellAdvice(averageRate, currentPrice, pendingAsset, asset)) {
-            case "SELL_HALF": {
-              await placeOrder({
-                userName: user_name,
-                side: "sell",
-                price: currentPrice,
-                amount: asset / 2,
-                market: market,
-                averageBuyRate: averageRate,
-                pendingAsset: pendingAsset(filteredTransactions),
-                config: { ...DefaultConfig, ...bot.config }
-              });
-              addLogsToTable(
-                user_name,
-                advice,
-                currentPrice,
-                true,
-                base,
-                market,
-                asset,
-                getDescription(
-                  advice,
-                  asset,
-                  currentPrice,
-                  averageRate,
-                  pendingAsset(filteredTransactions),
-                  indicatorResult
-                )
-              );
-              break;
-            }
-            case "SELL_ALL": {
-              await placeOrder({
-                userName: user_name,
-                side: "sell",
-                price: currentPrice,
-                amount: asset,
-                market: market,
-                averageBuyRate: averageRate,
-                config: { ...DefaultConfig, ...bot.config }
-              });
-              addLogsToTable(
-                user_name,
-                advice,
-                currentPrice,
-                true,
-                base,
-                market,
-                asset,
-                getDescription(
-                  advice,
-                  asset,
-                  currentPrice,
-                  averageRate,
-                  pendingAsset(filteredTransactions),
-                  indicatorResult
-                )
-              );
-              break;
-            }
-            default:
-              return;
-          }
-        } else {
-          const { quantity } = await bot.buyFunction({
-            balance: base,
-            currentPrice
-          });
-          if (quantity > 0) {
-            await placeOrder({
-              userName: user_name,
-              side: "buy",
-              price: currentPrice,
-              amount: quantity,
-              market: market,
-              config: { ...DefaultConfig, ...bot.config }
-            });
-          }
-        }
-      } else return;
-    } else {
+    if (asset > 0) {
       let sellData = bot.sellFunction({
         averageBuyRate: averageRate,
         currentPrice,
@@ -223,17 +60,6 @@ const run = async () => {
         averageRate,
         currentPrice,
         asset
-      });
-
-      Logs.addLog({
-        advice: "should sell",
-        currentPrice: currentPrice,
-        userName: user_name,
-        balance: base,
-        market: market,
-        asset: asset,
-        quantity: sellData.quantity,
-        additionalData: JSON.stringify(sellData)
       });
 
       if (sellData.quantity > 0) {
@@ -252,32 +78,18 @@ const run = async () => {
           status = "failure";
         }
 
-        Logs.addLog({
-          advice: "sell",
-          currentPrice: currentPrice,
-          userName: user_name,
-          isBuySellSuccessful: status === "success",
-          balance: base,
-          market: market,
-          asset: asset,
-          quantity: sellData.quantity,
-          additionalData: JSON.stringify(sellData)
-        });
         return;
       }
+    }
 
-      const buyData = await bot.buyFunction({ balance: base, currentPrice, config: { ...DefaultConfig, ...bot.config } });
-      console.log("Buy Data: ", { buyData, base, currentPrice });
-      Logs.addLog({
-        advice: "should buy",
-        currentPrice: currentPrice,
-        userName: user_name,
+    if (base > 0) {
+      const buyData = await bot.buyFunction({
         balance: base,
-        market: market,
-        asset: asset,
-        quantity: sellData.quantity,
-        additionalData: JSON.stringify(sellData)
+        currentPrice,
+        config: { ...DefaultConfig, ...bot.config }
       });
+      console.log("Buy Data: ", { buyData, base, currentPrice });
+
       if (buyData.quantity > 0) {
         try {
           await placeOrder({
@@ -292,17 +104,6 @@ const run = async () => {
         } catch (ex) {
           status = "failure";
         }
-        Logs.addLog({
-          advice: "buy",
-          currentPrice: currentPrice,
-          userName: user_name,
-          isBuySellSuccessful: status === "success",
-          balance: base,
-          market: market,
-          asset: asset,
-          quantity: buyData.quantity,
-          additionalData: JSON.stringify(buyData)
-        });
       }
     }
   }
