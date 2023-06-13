@@ -20,6 +20,8 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
         sellRatio = 0.3;
       } else if (profitPercentage > 5) {
         sellRatio = 0.1;
+      } else if (profitPercentage > 0.5) {
+        sellRatio = MINIMUM_SELL_VALUE/quantity;
       }
       if (sellRatio > 0) {
         let coinToSell = sellRatio * quantity;
