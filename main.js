@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const Account = require("./account");
+const Average = require("./account/average");
 const Market = require("./market");
 const DefaultConfig = require("./constants/config");
 const { placeOrder } = require("./market/orders");
@@ -31,7 +32,7 @@ const run = async () => {
       ...DefaultConfig,
       ...bot.config
     });
-    const { averageRate } = await Account.getAverageBuyRate({
+    const { averageRate, trades } = await Account.getAverageBuyRate({
       currentPrice,
       name: user_name,
       config: {
@@ -42,6 +43,7 @@ const run = async () => {
 
     
     console.log("averageRate: ", averageRate);
+    const lastTrade = Average.getRecentTrade(trades);
 
     const { market, asset, base } = await Account.getBalance(user_name, {
       ...DefaultConfig,
@@ -49,8 +51,8 @@ const run = async () => {
     });
     // return;
     let status = "progress";
-    if (asset > 0) {
-      let sellData = bot.sellFunction({
+    if (asset > 0 && (!lastTrade || lastTrade.side !== 'sell' || (((currentPrice - lastTrade.price) / lastTrade.price) * 100) > 1)) {
+      let sellData = await bot.sellFunction({
         averageBuyRate: averageRate,
         currentPrice,
         quantity: asset
@@ -82,7 +84,7 @@ const run = async () => {
       }
     }
 
-    if (base > 0) {
+    if (base > 0 && (!lastTrade || lastTrade.side !== 'buy' || (((lastTrade.price - currentPrice) / lastTrade.price) * 100) > 1)) {
       const buyData = await bot.buyFunction({
         balance: base,
         currentPrice,
@@ -117,7 +119,7 @@ const main = async () => {
   if (cronTask) {
     cronTask.stop()
   }
-  cronTask = cron.schedule("*/2 * * * *", () => {
+  cronTask = cron.schedule("*/1 * * * *", () => {
     run();
   });
 };

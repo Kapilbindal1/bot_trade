@@ -12,13 +12,13 @@ const getAverageRate = (trades, currentPrice) => {
 
   trades.forEach((trade) => {
     if (trade.info) {
-      const { side, status, cost,fee } = trade;
+      const { side, status, cost, fee } = trade;
       if (side === "buy") {
         let tmpA = numeral(trade.amount);
         if (fee && fee.cost) {
-          tmpA = tmpA.subtract(fee.cost)
+          tmpA = tmpA.subtract(fee.cost);
         }
-        const amount = tmpA.value()
+        const amount = tmpA.value();
 
         purchaseCount = purchaseCount.add(amount);
         buySum = buySum.add(cost);
@@ -38,7 +38,10 @@ const getAverageRate = (trades, currentPrice) => {
         sellSum = sellSum.add(cost);
 
         balanceCount = balanceCount.subtract(trade.amount);
-        if (balanceCount.value() <= 0 || (currentPrice && currentPrice * balanceCount.value() < 1)) {
+        if (
+          balanceCount.value() <= 0 ||
+          (currentPrice && currentPrice * balanceCount.value() < 1)
+        ) {
           averageRate = numeral(0);
           balanceCount = numeral(0);
         }
@@ -64,4 +67,22 @@ const getAverageRate = (trades, currentPrice) => {
   };
 };
 
-module.exports = { getAverageRate };
+const MINUTE = 60 * 1000;
+
+const getRecentTrade = (trades) => {
+  if (trades.length > 0) {
+    const lastTrade = trades[trades.length - 1];
+    const dateTime = lastTrade.timestamp || lastTrade.date;
+    const lastTradeDate = new Date(dateTime);
+    const currentDate = new Date();
+    if (currentDate - lastTradeDate < MINUTE * 10) {
+      if (!lastTrade.price) {
+        lastTrade.price = lastTrade.cost / lastTrade.amount;
+      }
+      return lastTrade;
+    }
+  }
+  return null;
+};
+
+module.exports = { getAverageRate, getRecentTrade };

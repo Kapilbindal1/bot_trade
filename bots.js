@@ -1,4 +1,4 @@
-const { buy1, buy3 } = require("./market/buy");
+const { buy1, buy3, buyROC } = require("./market/buy");
 const { sell1 } = require("./market/sell");
 
 const bots = [
@@ -19,6 +19,24 @@ const bots = [
     buyFunction: buy1.buy,
     sellFunction: sell1.sell,
     config: { asset: "ETH", base: "USDT", market: 'ETH/USDT' }
+  },
+  {
+    name: "matic_usdt",
+    buyFunction: buy1.buy,
+    sellFunction: sell1.sell,
+    config: { asset: "MATIC", base: "USDT", market: 'MATIC/USDT' }
+  },
+  {
+    name: "eth_usdt_ROC",
+    buyFunction: buyROC.buy,
+    sellFunction: sell1.sell,
+    config: { asset: "ETH", base: "USDT", market: 'ETH/USDT', buyLot: 20 }
+  },
+  {
+    name: "matic_usdt_ROC",
+    buyFunction: buyROC.buy,
+    sellFunction: sell1.sell,
+    config: { asset: "MATIC", base: "USDT", market: 'MATIC/USDT', buyLot: 20 }
   },
   // {
   //   name: "matic_usdt_30m",

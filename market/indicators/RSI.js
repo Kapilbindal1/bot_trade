@@ -1,11 +1,13 @@
 var RSI = require("technicalindicators").RSI;
 const { isRSIIncreasing } = require("./utils");
+const { calculateROCValue } = require("./ROC");
 
 const calculateRSIValue = (values) => {
   var inputRSI = {
     values,
     period: 14,
   };
+
   return RSI.calculate(inputRSI);
 };
 

@@ -39,7 +39,7 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
   return 0;
 };
 
-const sell = ({averageBuyRate, currentPrice, quantity}) => {
+const sell = async ({averageBuyRate, currentPrice, quantity}) => {
   const quantityToSell = getQuantityToSell(averageBuyRate, currentPrice, quantity)
   return { quantity: quantityToSell }
 };
