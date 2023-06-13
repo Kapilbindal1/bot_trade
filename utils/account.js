@@ -1,7 +1,6 @@
 const numeral = require("numeral");
 const averageRate = (trades, context) => {
 
-  console.log("Trades: ", trades)
 
   let averageBuyRate = numeral(0);
   let purchaseCount = numeral(0);
@@ -77,7 +76,6 @@ const averageRateWithoutContext = (trades) => {
   // const avgBuyRateLastUpdatedAt = new Date().getTime();
   // const avgSellRateLastUpdatedAt = new Date().getTime();
 
-  console.log('trades: ', trades)
 
   trades.forEach((trade) => {
     if (trade.info) {

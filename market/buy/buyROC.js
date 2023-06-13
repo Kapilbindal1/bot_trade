@@ -18,6 +18,8 @@ const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
 
   console.log("ROC_result_value12: ", ROC_result_value12)
   console.log("ROC_result_value9: ", ROC_result_value9)
+  
+  const buySignal = { ROC_12: ROC_result_value12, ROC_9: ROC_result_value9 }
 
   let buyRatio = 0;
   if (ROC_result_value12 > 5 && ROC_result_value9  > ROC_result_value12/2) {
@@ -44,9 +46,9 @@ const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
       amountOfBuy = amountShouldBuy;
     }
     const quantityToBuy = amountOfBuy / currentPrice;
-    return { quantity: quantityToBuy };
+    return { ...buySignal, quantity: quantityToBuy };
   }
-  return { quantity: 0 };
+  return { ...buySignal, quantity: 0 };
 };
 
 module.exports = { buy };

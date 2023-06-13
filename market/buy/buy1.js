@@ -21,6 +21,8 @@ const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
   console.log("Advice MACD: ", adviceMACD)
   let buyRatio = 0;
 
+  const buySignal = { rsi: adviceRSI, macd: adviceMACD  }
+
   if (adviceMACD.advice === "buy") {
     if (adviceRSI.advice === "buy") {
       buyRatio = 2;
@@ -40,9 +42,9 @@ const buy = async ({ balance, currentPrice, config = DefaultConfig }) => {
       amountOfBuy = amountShouldBuy;
     }
     const quantityToBuy = amountOfBuy / currentPrice;
-    return { quantity: quantityToBuy };
+    return { ...buySignal, quantity: quantityToBuy };
   }
-  return { quantity: 0 };
+  return { ...buySignal, quantity: 0 };
 };
 
 const buy_30m = async ({ balance, currentPrice, config = DefaultConfig }) => {

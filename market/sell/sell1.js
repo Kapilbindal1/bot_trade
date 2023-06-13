@@ -32,16 +32,16 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
         const leftSellCoins = quantity - coinToSell;
         const leftCoinValue = currentPrice * leftSellCoins;
         const coinsToSell = leftCoinValue < MINIMUM_SELL_VALUE ? quantity : coinToSell;
-        return coinsToSell;
+        return { quantity: coinsToSell, profitPercentage};
       }
     }
   }
-  return 0;
+  return { quantity: 0 };
 };
 
 const sell = async ({averageBuyRate, currentPrice, quantity}) => {
   const quantityToSell = getQuantityToSell(averageBuyRate, currentPrice, quantity)
-  return { quantity: quantityToSell }
+  return quantityToSell
 };
 
 module.exports = { sell };

@@ -7,6 +7,7 @@ const DefaultConfig = require("./constants/config");
 const { placeOrder } = require("./market/orders");
 const { bots } = require("./bots");
 const { keepAlive } = require("./alive");
+const { addLogger } = require("./db/logger")
 const {
   shouldSell,
   sellAdvice,
@@ -79,7 +80,10 @@ const run = async () => {
         } catch (ex) {
           status = "failure";
         }
-
+        addLogger({
+          userName: user_name,
+          data: JSON.stringify({ ...sellData, currentPrice, averageBuyRate, side: 'sell', market })
+        })
         return;
       }
     }
@@ -106,6 +110,11 @@ const run = async () => {
         } catch (ex) {
           status = "failure";
         }
+
+        addLogger({
+          userName: user_name,
+          data: JSON.stringify({ ...buyData, currentPrice, averageBuyRate, side: 'buy', market })
+        })
       }
     }
   }
