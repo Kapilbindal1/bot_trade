@@ -18,7 +18,7 @@ const getQuantityToSell = (averagePrice, currentPrice, quantity) => {
         sellRatio = 0.5;
       } else if (profitPercentage > 30) {
         sellRatio = 0.3;
-      } else if (profitPercentage > 10) {
+      } else if (profitPercentage > 5) {
         sellRatio = 0.1;
       }
       if (sellRatio > 0) {
