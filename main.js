@@ -113,7 +113,7 @@ const run = async () => {
 
         addLogger({
           userName: user_name,
-          data: JSON.stringify({ ...buyData, currentPrice, averageBuyRate, side: 'buy', market })
+          data: JSON.stringify({ ...buyData, currentPrice, side: 'buy', market })
         })
       }
     }
